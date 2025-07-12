@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医保谈判数据动态图表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #89a5f7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            padding: 40px;
+            width: 100%;
+            max-width: 1400px;
+            height: 700px;
+            position: relative;
+        }
+
+        #chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4A90E2, #2C5282);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, #FF8C00, #FFA500);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(255, 140, 0, 0.1));
+            border-radius: 12px;
+            border-left: 4px solid #4A90E2;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2C5282;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #4A5568;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 32px;
+            }
+            
+            .chart-container {
+                height: 500px;
+                padding: 20px;
+            }
+            
+            .controls {
+                position: static;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="main-title">医保谈判数据分析</h1>
+        <div class="subtitle">2018-2024年 • 动态展示 • 多维度对比</div>
+    </div>
+
+    <div class="chart-container">
+        <div class="controls">
+            <button class="control-btn" onclick="startAnimation()">重新播放</button>
+            <button class="control-btn" onclick="pauseAnimation()">暂停</button>
+            <button class="control-btn" onclick="showFullData()">显示全部</button>
+        </div>
+        
+        <div id="chart"></div>
+    </div>
+
+    <div class="stats-panel">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">854</div>
+                <div class="stat-label">总谈判品种数量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">758</div>
+                <div class="stat-label">总成功数量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">88.8%</div>
+                <div class="stat-label">平均成功率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">59.4%</div>
+                <div class="stat-label">平均降价幅度</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        const chart = echarts.init(document.getElementById('chart'));
+        let animationTimer = null;
+        let currentDataIndex = 0;
+        let isAnimating = false;
+
+        // 医保谈判数据
+        const medicalData = {
+            years: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+            negotiationCount: [18, 150, 162, 117, 147, 143, 117],
+            successCount: [17, 97, 119, 94, 121, 121, 89],
+            priceReduction: [57, 61, 51, 62, 60, 62, 63]
+        };
+
+        // 计算成功率
+        const successRate = medicalData.years.map((year, index) => {
+            return Math.round((medicalData.successCount[index] / medicalData.negotiationCount[index]) * 100);
+        });
+
+        // 颜色配置
+        const colors = ['#4A90E2', '#32CD32', '#FF6B6B', '#FFD700'];
+
+        // 图表配置
+        function getOption(dataLength = medicalData.years.length) {
+            // 创建数据数组，未显示的数据用null填充
+            const displayNegotiation = medicalData.negotiationCount.map((value, index) => 
+                index < dataLength ? value : null
+            );
+            const displaySuccess = medicalData.successCount.map((value, index) => 
+                index < dataLength ? value : null
+            );
+            
+            // 折线数据处理：保持连续性，用'-'填充未显示的数据
+            const displayPriceReduction = medicalData.priceReduction.map((value, index) => 
+                index < dataLength ? value : '-'
+            );
+            const displaySuccessRate = successRate.map((value, index) => 
+                index < dataLength ? value : '-'
+            );
+
+            return {
+                color: colors,
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: '#999'
+                        }
+                    },
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderColor: '#4A90E2',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333',
+                        fontSize: 14
+                    },
+                    formatter: function(params) {
+                        // 过滤掉null值和'-'值的参数
+                        const validParams = params.filter(param => param.value !== null && param.value !== '-');
+                        if (validParams.length === 0) return '';
+                        
+                        let result = `<div style="padding: 5px;"><strong>${validParams[0].axisValue}年</strong><br/>`;
+                        validParams.forEach(param => {
+                            const unit = param.seriesName.includes('降价') ? '%' : 
+                                        param.seriesName.includes('成功率') ? '%' : '个';
+                            result += `${param.marker} ${param.seriesName}: <strong>${param.value}${unit}</strong><br/>`;
+                        });
+                        result += '</div>';
+                        return result;
+                    }
+                },
+                grid: {
+                    left: '8%',
+                    right: '8%',
+                    bottom: '15%',
+                    top: '20%',
+                    containLabel: true
+                },
+                legend: {
+                    data: ['谈判品种数量', '谈判成功数量', '成功率', '目录外新增药品平均降价幅度'],
+                    top: '5%',
+                    textStyle: {
+                        fontSize: 14,
+                        color: '#4A5568'
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: medicalData.years, // 始终显示完整的年份
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        axisLabel: {
+                            fontSize: 14,
+                            color: '#4A5568',
+                            fontWeight: 'bold'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#E2E8F0',
+                                width: 2
+                            }
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '数量',
+                        position: 'left',
+                        max: 180, // 固定最大值，确保坐标轴稳定
+                        axisLabel: {
+                            formatter: '{value}',
+                            fontSize: 12,
+                            color: '#4A5568'
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: colors[0],
+                                width: 2
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(226, 232, 240, 0.6)',
+                                type: 'dashed'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '百分比(%)',
+                        position: 'right',
+                        min: 40, // 固定最小值
+                        max: 100, // 固定最大值
+                        axisLabel: {
+                            formatter: '{value}%',
+                            fontSize: 12,
+                            color: '#4A5568'
+                        },
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: colors[2],
+                                width: 2
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '谈判品种数量',
+                        type: 'bar',
+                        data: displayNegotiation,
+                        itemStyle: {
+                            borderRadius: [4, 4, 0, 0],
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(74, 144, 226, 0.3)'
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 20,
+                                shadowColor: 'rgba(74, 144, 226, 0.5)'
+                            }
+                        }
+                    },
+                    {
+                        name: '谈判成功数量',
+                        type: 'bar',
+                        data: displaySuccess,
+                        itemStyle: {
+                            borderRadius: [4, 4, 0, 0],
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(50, 205, 50, 0.3)'
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 20,
+                                shadowColor: 'rgba(50, 205, 50, 0.5)'
+                            }
+                        }
+                    },
+                    {
+                        name: '成功率',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: displaySuccessRate,
+                        lineStyle: {
+                            width: 4,
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(255, 107, 107, 0.3)'
+                        },
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        itemStyle: {
+                            borderWidth: 3,
+                            borderColor: '#fff',
+                            shadowBlur: 5,
+                            shadowColor: 'rgba(255, 107, 107, 0.5)'
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 15,
+                                shadowColor: 'rgba(255, 107, 107, 0.8)'
+                            }
+                        },
+                        connectNulls: true, // 连接数据点，形成连续的线
+                        animation: true,
+                        animationDuration: 600,
+                        animationEasing: 'linear'
+                    },
+                    {
+                        name: '目录外新增药品平均降价幅度',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: displayPriceReduction,
+                        lineStyle: {
+                            width: 4,
+                            type: 'dashed',
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(255, 215, 0, 0.3)'
+                        },
+                        symbol: 'diamond',
+                        symbolSize: 10,
+                        itemStyle: {
+                            borderWidth: 3,
+                            borderColor: '#fff',
+                            shadowBlur: 5,
+                            shadowColor: 'rgba(255, 215, 0, 0.5)'
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 15,
+                                shadowColor: 'rgba(255, 215, 0, 0.8)'
+                            }
+                        },
+                        connectNulls: true, // 连接数据点，形成连续的线
+                        animation: true,
+                        animationDuration: 600,
+                        animationEasing: 'linear'
+                    }
+                ],
+                animationDuration: 800,
+                animationEasing: 'cubicOut'
+            };
+        }
+
+        // 开始动画
+        function startAnimation() {
+            if (animationTimer) {
+                clearInterval(animationTimer);
+            }
+            
+            currentDataIndex = 0;
+            isAnimating = true;
+            
+            // 先清空图表
+            chart.setOption(getOption(0));
+            
+            animationTimer = setInterval(() => {
+                currentDataIndex++;
+                chart.setOption(getOption(currentDataIndex), true);
+                
+                if (currentDataIndex >= medicalData.years.length) {
+                    clearInterval(animationTimer);
+                    isAnimating = false;
+                    animationTimer = null;
+                }
+            }, 800);
+        }
+
+        // 暂停动画
+        function pauseAnimation() {
+            if (animationTimer) {
+                clearInterval(animationTimer);
+                animationTimer = null;
+                isAnimating = false;
+            }
+        }
+
+        // 显示全部数据
+        function showFullData() {
+            pauseAnimation();
+            currentDataIndex = medicalData.years.length;
+            chart.setOption(getOption(currentDataIndex));
+        }
+
+        // 初始化图表
+        function initChart() {
+            // 初始显示完整坐标轴但没有数据
+            chart.setOption(getOption(0));
+            
+            // 1秒后开始动画
+            setTimeout(() => {
+                startAnimation();
+            }, 1000);
+        }
+
+        // 响应式处理
+        window.addEventListener('resize', function() {
+            chart.resize();
+        });
+
+        // 启动应用
+        initChart();
+    </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!-- 在第八页动态图表后面插入 -->
+<div class="network-section" data-scroll="network">
+    <div class="container" style="max-width: 1400px; margin: 100px auto; background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); overflow: hidden;">
+        <div class="header" style="padding: 30px; text-align: center; position: relative;">
+            <h1 style="font-size: 28px; color: #1f2937; margin-bottom: 10px;">医保谈判关键词关系网络</h1>
+            <p class="subtitle" style="color: #6b7280; font-size: 16px;">圆形布局 ▪ 基于频次和相关性</p>
+            <div class="controls" style="position: absolute; right: 30px; top: 30px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="changeLayout('circular')" style="padding: 8px 20px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; transition: all 0.3s ease; background: #f59e0b; color: white;">圆形布局</button>
+                <button class="btn btn-secondary" onclick="changeLayout('force')" style="padding: 8px 20px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; transition: all 0.3s ease; background: #6366f1; color: white;">力导向布局</button>
+            </div>
+        </div>
+        
+        <div id="visualization" style="position: relative; background: #fafafa; min-height: 800px;">
+            <div class="legend" style="position: absolute; left: 30px; top: 30px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #3b82f6;"></div>
+                    <span>政策核心</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #f59e0b;"></div>
+                    <span>药品医疗</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #10b981;"></div>
+                    <span>经济价格</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #ec4899;"></div>
+                    <span>患者群体</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #8b5cf6;"></div>
+                    <span>医药企业</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #f97316;"></div>
+                    <span>医疗机构</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #06b6d4;"></div>
+                    <span>正面情绪</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #ef4444;"></div>
+                    <span>负面情绪</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #6b7280;"></div>
+                    <span>中性分析</span>
+                </div>
+                <div class="legend-item" style="display: flex; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                    <div class="legend-color" style="width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; background: #84cc16;"></div>
+                    <span>地区相关</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tooltip" style="position: absolute; padding: 12px; background: rgba(0, 0, 0, 0.9); color: white; border-radius: 8px; font-size: 14px; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 1000;"></div>
+</div>
+
+<style>
+.network-section .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.network-section svg {
+    width: 100%;
+    height: 800px;
+}
+
+.network-section .node {
+    cursor: pointer;
+}
+
+.network-section .node circle {
+    stroke: white;
+    stroke-width: 2px;
+    transition: all 0.3s ease;
+}
+
+.network-section .node text {
+    font-size: 12px;
+    text-anchor: middle;
+    pointer-events: none;
+    fill: #374151;
+}
+
+.network-section .link {
+    fill: none;
+    stroke-opacity: 0.4;
+    stroke-linecap: round;
+}
+
+.network-section .highlight {
+    opacity: 1 !important;
+}
+
+.network-section .fade {
+    opacity: 0.1 !important;
+}
+
+/* 动画效果 */
+.network-section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+}
+
+.network-section.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+</style>
+
+<script>
+// 等待DOM加载完成后初始化网络图
+document.addEventListener('DOMContentLoaded', function() {
+    // 监听滚动显示
+    const networkObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+                setTimeout(initNetworkGraph, 500);
+                networkObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    const networkSection = document.querySelector('.network-section');
+    if (networkSection) {
+        networkObserver.observe(networkSection);
+    }
+});
+
+function initNetworkGraph() {
+    // 完整数据集
+    const rawData = [
+        ["医保", "谈判", 17311], ["医保", "收起", 12262], ["医保", "药品", 12105],
+        ["医保", "国家", 12096], ["收起", "谈判", 12088], ["药品", "谈判", 12041],
+        ["国家", "谈判", 12007], ["国家", "药品", 9889], ["国家", "收起", 9618],
+        ["医保", "目录", 9615], ["目录", "谈判", 9573], ["收起", "药品", 9377],
+        ["目录", "药品", 8581], ["国家", "目录", 8340], ["收起", "目录", 7631],
+        ["医保", "纳入", 6485], ["纳入", "谈判", 6439], ["价格", "医保", 5895],
+        ["价格", "谈判", 5866], ["纳入", "药品", 5460], ["国家", "纳入", 5263],
+        ["价格", "收起", 5230], ["收起", "纳入", 5162], ["目录", "纳入", 4915],
+        ["价格", "国家", 4853], ["价格", "药品", 4748], ["医保", "微博", 4514],
+        ["医保", "视频", 4511], ["微博", "谈判", 4423], ["视频", "谈判", 4422],
+        ["医保", "降价", 4343], ["谈判", "降价", 4326], ["医保", "患者", 4316],
+        ["患者", "谈判", 4293], ["微博", "视频", 4190], ["准入", "医保", 4183],
+        ["准入", "谈判", 4179], ["价格", "目录", 4157], ["微博", "收起", 3940],
+        ["收起", "视频", 3902], ["患者", "收起", 3763], ["医保", "通过", 3758],
+        ["谈判", "通过", 3739], ["国家", "患者", 3727], ["医保", "调整", 3660],
+        ["医保", "治疗", 3632], ["调整", "谈判", 3630], ["药品", "视频", 3622],
+        ["微博", "药品", 3594], ["企业", "医保", 3588], ["患者", "药品", 3550],
+        ["企业", "谈判", 3536], ["医保", "用药", 3529], ["治疗", "谈判", 3528],
+        ["用药", "谈判", 3517], ["国家", "视频", 3466], ["国家", "微博", 3444],
+        ["收起", "降价", 3440], ["收起", "治疗", 3433], ["收起", "通过", 3425],
+        ["医保", "抗癌药", 3420], ["抗癌药", "谈判", 3394], ["国家", "降价", 3388],
+        ["国家", "调整", 3360], ["准入", "药品", 3355], ["准入", "国家", 3331],
+        ["收起", "调整", 3324], ["药品", "降价", 3313], ["医保", "进入", 3305],
+        ["药品", "调整", 3290], ["医保", "范围", 3274], ["范围", "谈判", 3261],
+        ["医保", "新闻", 3240], ["谈判", "进入", 3207], ["收起", "用药", 3196],
+        ["国家", "通过", 3175], ["目录", "调整", 3158], ["患者", "目录", 3155],
+        ["用药", "药品", 3155], ["新闻", "谈判", 3148]
+    ];
+
+    // 处理数据
+    const nodes = new Map();
+    const links = [];
+
+    rawData.forEach(([source, target, value]) => {
+        if (!nodes.has(source)) {
+            nodes.set(source, { id: source, weight: 0, connections: new Set() });
+        }
+        if (!nodes.has(target)) {
+            nodes.set(target, { id: target, weight: 0, connections: new Set() });
+        }
+        
+        nodes.get(source).weight += value;
+        nodes.get(target).weight += value;
+        nodes.get(source).connections.add(target);
+        nodes.get(target).connections.add(source);
+        
+        links.push({ source, target, value });
+    });
+
+    // 转换为数组并排序
+    let nodeArray = Array.from(nodes.values())
+        .sort((a, b) => b.weight - a.weight);
+
+    // 分类函数
+    function getCategory(id) {
+        const categories = {
+            "政策核心": ["医保", "谈判", "国家", "政策", "基本"],
+            "药品医疗": ["药品", "用药", "抗癌药", "罕见", "医药"],
+            "经济价格": ["价格", "降价", "支付", "费用", "成本"],
+            "患者群体": ["患者", "群体", "病人", "需求", "民众"],
+            "医药企业": ["企业", "公司", "厂家", "生产", "研发"],
+            "医疗机构": ["医疗", "医院", "机构", "卫生", "治疗"],
+            "正面情绪": ["成功", "新增", "通过", "纳入", "进入"],
+            "负面情绪": ["失败", "退出", "困难", "问题", "挑战"],
+            "中性分析": ["目录", "调整", "范围", "收起", "其中", "发布", "公布", "结果", "工作", "进行", "实施"],
+            "地区相关": ["中国", "地方", "省市", "区域", "全国"]
+        };
+
+        for (const [category, keywords] of Object.entries(categories)) {
+            if (keywords.some(keyword => id.includes(keyword))) {
+                return category;
+            }
+        }
+        
+        // 特殊处理一些词
+        if (["微博", "视频", "新闻"].includes(id)) return "中性分析";
+        if (["今年", "新版", "平均", "专家"].includes(id)) return "中性分析";
+        
+        return "中性分析";
+    }
+
+    // 颜色映射
+    const colorMap = {
+        "政策核心": "#3b82f6",
+        "药品医疗": "#f59e0b",
+        "经济价格": "#10b981",
+        "患者群体": "#ec4899",
+        "医药企业": "#8b5cf6",
+        "医疗机构": "#f97316",
+        "正面情绪": "#06b6d4",
+        "负面情绪": "#ef4444",
+        "中性分析": "#6b7280",
+        "地区相关": "#84cc16"
+    };
+
+    // 为节点添加分类
+    nodeArray.forEach(node => {
+        node.category = getCategory(node.id);
+        node.color = colorMap[node.category];
+    });
+
+    // SVG设置
+    const width = 1400;
+    const height = 800;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) * 0.35;
+
+    const svg = d3.select("#visualization")
+        .append("svg")
+        .attr("viewBox", [0, 0, width, height]);
+
+    const g = svg.append("g");
+
+    // 添加缩放
+    const zoom = d3.zoom()
+        .scaleExtent([0.5, 3])
+        .on("zoom", (event) => {
+            g.attr("transform", event.transform);
+        });
+
+    svg.call(zoom);
+
+    // Tooltip
+    const tooltip = d3.select(".tooltip");
+
+    // 圆形布局函数
+    function circularLayout() {
+        const angleStep = (2 * Math.PI) / nodeArray.length;
+        
+        nodeArray.forEach((node, i) => {
+            const angle = i * angleStep - Math.PI / 2;
+            node.x = centerX + radius * Math.cos(angle);
+            node.y = centerY + radius * Math.sin(angle);
+            node.angle = angle;
+        });
+    }
+
+    // 初始化圆形布局
+    circularLayout();
+
+    // 创建连线
+    const link = g.append("g")
+        .selectAll("path")
+        .data(links)
+        .join("path")
+        .attr("class", "link")
+        .attr("stroke", d => {
+            const sourceNode = nodeArray.find(n => n.id === d.source);
+            const targetNode = nodeArray.find(n => n.id === d.target);
+            return sourceNode.color;
+        })
+        .attr("stroke-width", d => Math.sqrt(d.value) / 50)
+        .attr("d", d => {
+            const sourceNode = nodeArray.find(n => n.id === d.source);
+            const targetNode = nodeArray.find(n => n.id === d.target);
+            
+            // 创建曲线
+            const dx = targetNode.x - sourceNode.x;
+            const dy = targetNode.y - sourceNode.y;
+            const dr = Math.sqrt(dx * dx + dy * dy) / 2;
+            
+            return `M${sourceNode.x},${sourceNode.y}A${dr},${dr} 0 0,1 ${targetNode.x},${targetNode.y}`;
+        });
+
+    // 创建节点
+    const node = g.append("g")
+        .selectAll("g")
+        .data(nodeArray)
+        .join("g")
+        .attr("class", "node")
+        .attr("transform", d => `translate(${d.x},${d.y})`);
+
+    // 添加圆形
+    node.append("circle")
+        .attr("r", d => Math.sqrt(d.weight) / 60 + 5)
+        .attr("fill", d => d.color);
+
+    // 添加文字 - 在圆形外部
+    node.append("text")
+        .text(d => d.id)
+        .attr("x", d => {
+            const angle = d.angle || 0;
+            return (Math.sqrt(d.weight) / 60 + 15) * Math.cos(angle);
+        })
+        .attr("y", d => {
+            const angle = d.angle || 0;
+            return (Math.sqrt(d.weight) / 60 + 15) * Math.sin(angle);
+        })
+        .style("font-size", d => {
+            const size = Math.sqrt(d.weight) / 70 + 10;
+            return Math.min(size, 14) + "px";
+        })
+        .attr("transform", d => {
+            const angle = (d.angle * 180 / Math.PI) + 90;
+            const x = (Math.sqrt(d.weight) / 60 + 15) * Math.cos(d.angle);
+            const y = (Math.sqrt(d.weight) / 60 + 15) * Math.sin(d.angle);
+            if (angle > 90 && angle < 270) {
+                return `rotate(${angle + 180}, ${x}, ${y})`;
+            }
+            return `rotate(${angle}, ${x}, ${y})`;
+        });
+
+    // 交互
+    node
+        .on("mouseenter", function(event, d) {
+            // 高亮相关连线
+            link.classed("fade", l => l.source !== d.id && l.target !== d.id);
+            link.classed("highlight", l => l.source === d.id || l.target === d.id);
+            
+            // 高亮相关节点
+            node.classed("fade", n => !d.connections.has(n.id) && n.id !== d.id);
+            
+            // 显示tooltip
+            const connectionCount = d.connections.size;
+            const totalWeight = links
+                .filter(l => l.source === d.id || l.target === d.id)
+                .reduce((sum, l) => sum + l.value, 0);
+            
+            tooltip.style("opacity", 1)
+                .html(`
+                    <strong>${d.id}</strong><br>
+                    类别: ${d.category}<br>
+                    权重: ${d.weight.toLocaleString()}<br>
+                    连接数: ${connectionCount}<br>
+                    连接强度: ${totalWeight.toLocaleString()}
+                `)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseleave", function() {
+            link.classed("fade", false).classed("highlight", false);
+            node.classed("fade", false);
+            tooltip.style("opacity", 0);
+        });
+
+    // 布局切换函数
+    let currentLayout = "circular";
+    let simulation = null;
+
+    function changeLayout(layout) {
+        currentLayout = layout;
+        
+        if (layout === "circular") {
+            if (simulation) simulation.stop();
+            circularLayout();
+            updatePositions(1000);
+        } else if (layout === "force") {
+            if (simulation) simulation.stop();
+            
+            simulation = d3.forceSimulation(nodeArray)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-300))
+                .force("center", d3.forceCenter(centerX, centerY))
+                .force("collision", d3.forceCollide().radius(d => Math.sqrt(d.weight) / 60 + 20));
+            
+            simulation.on("tick", () => {
+                updatePositions(0);
+            });
+        }
+    }
+
+    function updatePositions(duration) {
+        node.transition()
+            .duration(duration)
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+        
+        link.transition()
+            .duration(duration)
+            .attr("d", d => {
+                const sourceNode = nodeArray.find(n => n.id === d.source.id || n.id === d.source);
+                const targetNode = nodeArray.find(n => n.id === d.target.id || n.id === d.target);
+                
+                if (currentLayout === "circular") {
+                    const dx = targetNode.x - sourceNode.x;
+                    const dy = targetNode.y - sourceNode.y;
+                    const dr = Math.sqrt(dx * dx + dy * dy) / 2;
+                    return `M${sourceNode.x},${sourceNode.y}A${dr},${dr} 0 0,1 ${targetNode.x},${targetNode.y}`;
+                } else {
+                    return `M${sourceNode.x},${sourceNode.y}L${targetNode.x},${targetNode.y}`;
+                }
+            });
+    }
+
+    // 暴露到全局
+    window.changeLayout = changeLayout;
+}
+</script>

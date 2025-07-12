@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医保谈判舆情动态分析</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+        }
+        #main { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <script>
+        const updateFrequency = 5000; // 切换频率
+        const animationDuration = 2000; // 动画时长
+        const emotionColors = {
+            '积极支持': '#5470c6',
+            '理性认可': '#91cc75',
+            '感恩情绪': '#fac858',
+            '担忧质疑': '#ee6666',
+            '不满抱怨': '#73c0de',
+            '愤怒反对': '#3ba272',
+            '中性表达': '#fc8452'
+        };
+        const timelineData = [
+            { time: '2022年谈判前', data: [
+                {emotion:'理性认可', percentage:37.7},
+                {emotion:'中性表达', percentage:31.7},
+                {emotion:'积极支持', percentage:20.9},
+                {emotion:'担忧质疑', percentage:5.8},
+                {emotion:'感恩情绪', percentage:3.1},
+                {emotion:'不满抱怨', percentage:0.8},
+                {emotion:'愤怒反对', percentage:0}
+            ]},
+            { time: '2022年谈判期间', data: [
+                {emotion:'中性表达', percentage:56.9},
+                {emotion:'理性认可', percentage:21.0},
+                {emotion:'积极支持', percentage:10.6},
+                {emotion:'担忧质疑', percentage:6.3},
+                {emotion:'不满抱怨', percentage:2.4},
+                {emotion:'愤怒反对', percentage:2.0},
+                {emotion:'感恩情绪', percentage:0.8}
+            ]},
+            { time: '2022年谈判后', data: [
+                {emotion:'中性表达', percentage:53.7},
+                {emotion:'理性认可', percentage:20.6},
+                {emotion:'担忧质疑', percentage:12.7},
+                {emotion:'积极支持', percentage:9.1},
+                {emotion:'感恩情绪', percentage:1.9},
+                {emotion:'不满抱怨', percentage:1.2},
+                {emotion:'愤怒反对', percentage:0.8}
+            ]},
+            { time: '2023年谈判前', data: [
+                {emotion:'中性表达', percentage:45.8},
+                {emotion:'理性认可', percentage:31.5},
+                {emotion:'积极支持', percentage:10.2},
+                {emotion:'担忧质疑', percentage:9.7},
+                {emotion:'愤怒反对', percentage:1.9},
+                {emotion:'感恩情绪', percentage:0.5},
+                {emotion:'不满抱怨', percentage:0.4}
+            ]},
+            { time: '2023年谈判期间', data: [
+                {emotion:'中性表达', percentage:81.0},
+                {emotion:'理性认可', percentage:7.4},
+                {emotion:'积极支持', percentage:7.1},
+                {emotion:'担忧质疑', percentage:4.0},
+                {emotion:'感恩情绪', percentage:0.3},
+                {emotion:'愤怒反对', percentage:0.3},
+                {emotion:'不满抱怨', percentage:0}
+            ]},
+            { time: '2023年谈判后', data: [
+                {emotion:'中性表达', percentage:53.5},
+                {emotion:'理性认可', percentage:26.1},
+                {emotion:'担忧质疑', percentage:9.7},
+                {emotion:'积极支持', percentage:8.7},
+                {emotion:'不满抱怨', percentage:1.1},
+                {emotion:'愤怒反对', percentage:0.5},
+                {emotion:'感恩情绪', percentage:0.4}
+            ]},
+            { time: '2024年谈判前', data: [
+                {emotion:'中性表达', percentage:42.3},
+                {emotion:'理性认可', percentage:29.2},
+                {emotion:'积极支持', percentage:12.7},
+                {emotion:'担忧质疑', percentage:11.9},
+                {emotion:'感恩情绪', percentage:2.3},
+                {emotion:'愤怒反对', percentage:0.9},
+                {emotion:'不满抱怨', percentage:0.7}
+            ]},
+            { time: '2024年谈判期间', data: [
+                {emotion:'中性表达', percentage:61.7},
+                {emotion:'积极支持', percentage:21.1},
+                {emotion:'理性认可', percentage:8.0},
+                {emotion:'担忧质疑', percentage:6.6},
+                {emotion:'感恩情绪', percentage:1.9},
+                {emotion:'愤怒反对', percentage:0.5},
+                {emotion:'不满抱怨', percentage:0.2}
+            ]},
+            { time: '2024年谈判后', data: [
+                {emotion:'中性表达', percentage:47.1},
+                {emotion:'积极支持', percentage:26.9},
+                {emotion:'理性认可', percentage:15.6},
+                {emotion:'担忧质疑', percentage:8.6},
+                {emotion:'不满抱怨', percentage:0.9},
+                {emotion:'感恩情绪', percentage:0.7},
+                {emotion:'愤怒反对', percentage:0.1}
+            ]}
+        ];
+        
+        function getData(arr) {
+            return arr.slice().sort((a,b)=>b.percentage-a.percentage).map(item=>({
+                value: item.percentage,
+                name: item.emotion,
+                itemStyle: { color: emotionColors[item.emotion] }
+            }));
+        }
+        
+        const myChart = echarts.init(document.getElementById('main'));
+        const option = {
+            title: { text: '医保谈判微博舆情动态分析', subtext: '各时期情感态度分布（%）', left: 'center', top: 20, textStyle: { fontSize: 24, fontWeight: 'bold' } },
+            grid: { top: 100, bottom: 100, left: 150, right: 120 },
+            xAxis: { max: 'dataMax', axisLabel: { formatter: n=>Math.round(n)+'%', fontSize:12 }, splitLine: { show:true, lineStyle:{ type:'dashed', color:'#e0e0e0' } } },
+            yAxis: { type:'category', inverse:true, data: [], axisLabel:{ fontSize:14 }, animationDuration:animationDuration, animationDurationUpdate:animationDuration },
+            series: [{ realtimeSort:true, type:'bar', data:[], encode:{ x:'value', y:'name' }, label:{ show:true, position:'right', formatter:'{@value}%', fontSize:12, fontWeight:'bold' }, emphasis:{ focus:'series' } }],
+            legend:{ show:true, bottom:20, data:Object.keys(emotionColors), textStyle:{ fontSize:12 }, itemWidth:25, itemHeight:14 },
+            graphic:{ elements:[{ type:'text', right:80, bottom:100, style:{ text:'', font:'bolder 60px monospace', fill:'rgba(100,100,100,0.25)' }, z:100 }] },
+            animationDuration:0, animationDurationUpdate:animationDuration, animationEasing:'cubicInOut', animationEasingUpdate:'cubicInOut'
+        };
+        // 初始化第一帧
+        updateData(0);
+        function updateData(idx) {
+            const cur = timelineData[idx];
+            const sorted = cur.data.slice().sort((a,b)=>b.percentage-a.percentage);
+            option.series[0].data = sorted.map(item=>({ value:item.percentage, name:item.emotion, itemStyle:{ color: emotionColors[item.emotion] } }));
+            option.yAxis.data = sorted.map(item=>item.emotion);
+            option.graphic.elements[0].style.text = cur.time;
+            myChart.setOption(option);
+        }
+        // 自动播放
+        let index=0; setInterval(()=>{ index=(index+1)%timelineData.length; updateData(index); }, updateFrequency);
+        window.addEventListener('resize',()=>myChart.resize());
+    </script>
+</body>
+</html>

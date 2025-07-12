@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国家药品目录调整流程 - 交互式路线图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #89a5f7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .roadmap-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            padding: 50px;
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .roadmap-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000" opacity="0.02"/><circle cx="75" cy="75" r="1" fill="%23000" opacity="0.02"/><circle cx="50" cy="10" r="1" fill="%23000" opacity="0.02"/><circle cx="90" cy="40" r="1" fill="%23000" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #2C5282, #4A90E2, #1E40AF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #FF8C00;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .subtitle::before,
+        .subtitle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #FF8C00, #FFA500);
+            border-radius: 2px;
+        }
+
+        .subtitle::before {
+            left: -80px;
+        }
+
+        .subtitle::after {
+            right: -80px;
+        }
+
+        .year-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #FF8C00, #FFA500);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.3);
+            transform: rotate(5deg);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: rotate(5deg) scale(1); }
+            50% { transform: rotate(5deg) scale(1.05); }
+        }
+
+        .roadmap-path {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            margin-bottom: 40px;
+        }
+
+        .path-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .path-line {
+            fill: none;
+            stroke: url(#pathGradient);
+            stroke-width: 25;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 8px 20px rgba(74, 144, 226, 0.4));
+            stroke-dasharray: 3000;
+            stroke-dashoffset: 3000;
+            animation: drawPath 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes drawPath {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .path-shadow {
+            fill: none;
+            stroke: rgba(74, 144, 226, 0.15);
+            stroke-width: 35;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: blur(15px);
+        }
+
+        .path-highlight {
+            fill: none;
+            stroke: url(#pathHighlight);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.8;
+            stroke-dasharray: 20 10;
+            animation: flowDirection 3s linear infinite;
+        }
+
+        @keyframes flowDirection {
+            0% {
+                stroke-dashoffset: 30;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .step-node {
+            position: absolute;
+            z-index: 3;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step-node:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .node-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF8C00, #FFA500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 25px rgba(255, 140, 0, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            animation: nodeAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .step-node .node-circle {
+            animation: nodeAppear 0.6s ease-out forwards;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        /* 修复动画时序Bug - 使用明确的类名选择器 */
+        .step-1 .node-circle { animation-delay: 0.8s; }
+        .step-2 .node-circle { animation-delay: 1.6s; }
+        .step-3 .node-circle { animation-delay: 2.4s; }
+        .step-4 .node-circle { animation-delay: 3.2s; }
+        .step-5 .node-circle { animation-delay: 4.0s; }
+
+        @keyframes nodeAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .node-circle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF8C00, #FFA500);
+            opacity: 0.6;
+            transform: scale(1.2);
+            animation: ripple 2s infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(1.2);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .node-number {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+            position: relative;
+        }
+
+        .step-label {
+            background: rgba(44, 82, 130, 0.95);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(44, 82, 130, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .option-label {
+            display: none;
+        }
+
+        .step-label {
+            background: rgba(44, 82, 130, 0.95);
+            color: white;
+            padding: 16px 28px;
+            border-radius: 22px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 25px;
+            box-shadow: 0 5px 15px rgba(44, 82, 130, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            min-width: 140px;
+        }
+
+        /* 节点位置 - 重新调整以匹配路径 */
+        .step-1 { top: 80px; left: 80px; }
+        .step-2 { top: 280px; left: 280px; }
+        .step-3 { top: 120px; left: 520px; }
+        .step-4 { top: 320px; left: 760px; }
+        .step-5 { top: 80px; left: 1000px; }
+
+        .details-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .details-panel.active {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 300px;
+        }
+
+        .details-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2C5282;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .details-time {
+            background: linear-gradient(135deg, #FF8C00, #FFA500);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: 15px;
+        }
+
+        .details-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: rgba(74, 144, 226, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #4A90E2;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateX(5px);
+            background: rgba(74, 144, 226, 0.15);
+        }
+
+        .detail-item h4 {
+            color: #2C5282;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .detail-item p {
+            color: #4A5568;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .statistics-section {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+        }
+
+        .stats-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2C5282;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .progress-bars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .progress-item {
+            text-align: center;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: #4A5568;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: rgba(74, 144, 226, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4A90E2, #2C5282);
+            border-radius: 10px;
+            transition: width 2s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-percentage {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2C5282;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .roadmap-container {
+                padding: 30px 20px;
+            }
+            
+            .main-title {
+                font-size: 36px;
+            }
+            
+            .roadmap-path {
+                height: 800px;
+            }
+            
+            .step-1 { top: 80px; left: 50px; }
+            .step-2 { top: 200px; left: 50px; }
+            .step-3 { top: 320px; left: 50px; }
+            .step-4 { top: 440px; left: 50px; }
+            .step-5 { top: 560px; left: 50px; }
+            
+            .roadmap-path svg {
+                display: none;
+            }
+            
+            .roadmap-path::before {
+                content: '';
+                position: absolute;
+                left: 90px;
+                top: 120px;
+                bottom: 200px;
+                width: 4px;
+                background: linear-gradient(180deg, #4A90E2, #67B7DC, #89CDF1, #67B7DC, #2C5282);
+                border-radius: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="roadmap-container">
+
+        
+        <div class="header">
+            <h1 class="main-title">国家药品目录调整流程</h1>
+            
+        </div>
+
+        <div class="roadmap-path">
+            <svg class="path-svg" viewBox="0 0 1200 400">
+                <defs>
+                    <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="20%" style="stop-color:#4A90E2"/>
+                        <stop offset="40%" style="stop-color:#67B7DC"/>
+                        <stop offset="60%" style="stop-color:#89CDF1"/>
+                        <stop offset="80%" style="stop-color:#67B7DC"/>
+                        <stop offset="100%" style="stop-color:#764ba2"/>
+                    </linearGradient>
+                    <linearGradient id="pathHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ffffff; stop-opacity:0.9"/>
+                        <stop offset="50%" style="stop-color:#ffffff; stop-opacity:0.6"/>
+                        <stop offset="100%" style="stop-color:#ffffff; stop-opacity:0.9"/>
+                    </linearGradient>
+                </defs>
+                
+                <!-- 阴影层 -->
+                <path class="path-shadow" d="M 120 120 C 200 320, 280 350, 320 320 C 360 290, 480 200, 560 160 C 640 120, 720 250, 800 360 C 880 470, 960 180, 1040 120"/>
+                
+                <!-- 主路径 -->
+                <path class="path-line" d="M 120 120 C 200 320, 280 350, 320 320 C 360 290, 480 200, 560 160 C 640 120, 720 250, 800 360 C 880 470, 960 180, 1040 120"/>
+                
+                <!-- 高光流动效果 -->
+                <path class="path-highlight" d="M 120 120 C 200 320, 280 350, 320 320 C 360 290, 480 200, 560 160 C 640 120, 720 250, 800 360 C 880 470, 960 180, 1040 120"/>
+            </svg>
+            </svg>
+            </svg>
+
+            <div class="step-node step-1" onclick="showDetails(1)">
+                <div class="node-circle">
+                    <span class="node-number">01</span>
+                    
+                </div>
+                <div class="step-label">准备阶段</div>
+            </div>
+
+            <div class="step-node step-2" onclick="showDetails(2)">
+                <div class="node-circle">
+                    <span class="node-number">02</span>
+                    
+                </div>
+                <div class="step-label">申报阶段</div>
+            </div>
+
+            <div class="step-node step-3" onclick="showDetails(3)">
+                <div class="node-circle">
+                    <span class="node-number">03</span>
+                    
+                </div>
+                <div class="step-label">专家评审</div>
+            </div>
+
+            <div class="step-node step-4" onclick="showDetails(4)">
+                <div class="node-circle">
+                    <span class="node-number">04</span>
+                    
+                </div>
+                <div class="step-label">谈判/竞价</div>
+            </div>
+
+            <div class="step-node step-5" onclick="showDetails(5)">
+                <div class="node-circle">
+                    <span class="node-number">05</span>
+                    
+                </div>
+                <div class="step-label">公布结果</div>
+            </div>
+        </div>
+
+        <div id="details-panel" class="details-panel">
+            <div id="details-content">
+                <!-- 详细内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+
+      
+        </div>
+    </div>
+
+    <script>
+        // 详细信息数据
+        const stageDetails = {
+            1: {
+                title: "准备阶段",
+                time: "5月-6月",
+                items: [
+                    {
+                        title: "制定工作方案",
+                        description: "确定年度医保目录调整的总体方案和具体实施计划"
+                    },
+                    {
+                        title: "完善谈判规则",
+                        description: "制定和完善药品续订、新增等各类谈判规则"
+                    },
+                    {
+                        title: "优化信息系统",
+                        description: "升级完善申报和评审相关的信息化系统"
+                    }
+                ]
+            },
+            2: {
+                title: "申报阶段",
+                time: "7月-8月",
+                items: [
+                    {
+                        title: "企业提交材料",
+                        description: "医药企业按要求提交药品申报相关材料"
+                    },
+                    {
+                        title: "形式审查",
+                        description: "对企业提交的申报材料进行形式审查"
+                    },
+                    {
+                        title: "公示复核",
+                        description: "公示审查结果，进行复核，并将结果反馈给企业"
+                    }
+                ]
+            },
+            3: {
+                title: "专家评审",
+                time: "8月-9月",
+                items: [
+                    {
+                        title: "组织联合评审",
+                        description: "组织医学、药学、经济学等领域专家开展联合评审"
+                    },
+                    {
+                        title: "系统化评估",
+                        description: "对药品的安全性、有效性、经济性进行综合评估"
+                    },
+                    {
+                        title: "反馈评审结果",
+                        description: "通过申报系统向企业反馈专家评审结果"
+                    }
+                ]
+            },
+            4: {
+                title: "谈判/竞价",
+                time: "9月-10月",
+                items: [
+                    {
+                        title: "提交谈判材料",
+                        description: "组织企业提交谈判或竞价相关材料"
+                    },
+                    {
+                        title: "支付标准测算",
+                        description: "开展支付标准测算评估，确定合理价格区间"
+                    },
+                    {
+                        title: "现场谈判",
+                        description: "开展现场谈判或竞价，协商确定最终价格"
+                    },
+                    {
+                        title: "签署协议",
+                        description: "组织通过谈判的企业签署相关协议"
+                    }
+                ]
+            },
+            5: {
+                title: "公布结果",
+                time: "11月",
+                items: [
+                    {
+                        title: "印发调整文件",
+                        description: "正式印发关于医保目录调整的相关文件"
+                    },
+                    {
+                        title: "公布调整结果",
+                        description: "向社会公布药品目录调整的具体结果"
+                    },
+                    {
+                        title: "发布新版目录",
+                        description: "发布新版国家基本医疗保险药品目录"
+                    }
+                ]
+            }
+        };
+
+        function showDetails(stageNumber) {
+            const panel = document.getElementById('details-panel');
+            const content = document.getElementById('details-content');
+            const stage = stageDetails[stageNumber];
+
+            // 如果点击的是当前显示的阶段，则关闭面板
+            if (panel.classList.contains('active') && panel.dataset.currentStage == stageNumber) {
+                panel.classList.remove('active');
+                return;
+            }
+
+            let itemsHtml = '';
+            stage.items.forEach(item => {
+                itemsHtml += `
+                    <div class="detail-item">
+                        <h4>${item.title}</h4>
+                        <p>${item.description}</p>
+                    </div>
+                `;
+            });
+
+            content.innerHTML = `
+                <div class="details-title">
+                    ${stage.title}
+                    <div class="details-time">${stage.time}</div>
+                </div>
+                <div class="details-content">
+                    ${itemsHtml}
+                </div>
+            `;
+
+            panel.classList.add('active');
+            panel.dataset.currentStage = stageNumber;
+
+            // 高亮当前选中的节点
+            document.querySelectorAll('.step-node').forEach(node => {
+                node.style.transform = '';
+                node.style.zIndex = '';
+            });
+            
+            const currentNode = document.querySelector(`.step-${stageNumber}`);
+            currentNode.style.transform = 'scale(1.15)';
+            currentNode.style.zIndex = '10';
+        }
+
+        // 页面加载完成后初始化进度条动画
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(fill => {
+                    const width = fill.getAttribute('data-width');
+                    fill.style.width = width;
+                });
+            }, 1000);
+        });
+
+        // 添加键盘导航支持
+        document.addEventListener('keydown', function(e) {
+            if (e.key >= '1' && e.key <= '5') {
+                showDetails(parseInt(e.key));
+            }
+        });
+
+        // 移动端触摸优化
+        document.querySelectorAll('.step-node').forEach(node => {
+            node.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            node.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    if (!this.style.zIndex) {
+                        this.style.transform = '';
+                    }
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
