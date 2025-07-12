@@ -789,6 +789,21 @@
     </div>
 
     <script>
+        (function () {
+  // 把所有 fade-in 元素直接显示
+  function revealAll () {
+    document.querySelectorAll('.fade-in-element')
+            .forEach(el => el.classList.add('show'));
+  }
+
+  /* ① 浏览器太老 —— 没有 IntersectionObserver */
+  if (!('IntersectionObserver' in window)) {
+    revealAll();
+    return;                // 后面的动画逻辑不用跑了
+  }
+
+  /* ② localStorage 被禁、脚本报错。用 try...catch 包起来 */
+  try {
         // 药品分类配置
         const medicineCategories = {
             // 心血管类
@@ -1322,6 +1337,11 @@
             });
             return stats;
         }
+    } catch (err) {
+    console.error('[MessageBoard] 脚本异常，已降级展示：', err);
+    revealAll();
+  }
+})();
     </script>
 </body>
 </html>
