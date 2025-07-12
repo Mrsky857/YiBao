@@ -629,10 +629,11 @@
 
         /* 动画效果类 */
         .fade-in-element {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
+  opacity: 1;                 /* ← 直接可见 */
+  transform: translateY(0);   /* ← 不再下移 */
+  transition: opacity .8s ease, transform .8s ease;
+}
+
 
         .fade-in-element.show {
             opacity: 1;
@@ -916,28 +917,19 @@
         let currentFilter = 'all';
 
         // 初始化页面
-        document.addEventListener('DOMContentLoaded', function() {
-            displayMessages();
-            updateMessageCount();
-            initializeFilters();
-            
-            // 滚动动画
-            const page10 = document.getElementById('page10');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const fadeElements = page10.querySelectorAll('.fade-in-element');
-                        fadeElements.forEach((element, index) => {
-                            setTimeout(() => {
-                                element.classList.add('show');
-                            }, index * 200);
-                        });
-                    }
-                });
-            }, { threshold: 0.3 });
+        document.addEventListener('DOMContentLoaded', () => {
+  /* 原本你的初始化函数 */
+  displayMessages();
+  updateMessageCount();
+  initializeFilters();
 
-            observer.observe(page10);
-        });
+  /* —— 关键新增：立刻显形 —— */
+  document.querySelectorAll('.fade-in-element').forEach(el => {
+    // 对已声明 from-bottom 的元素才加 show，普通元素本来就可见
+    if (el.classList.contains('from-bottom')) el.classList.add('show');
+  });
+});
+
 
         // 智能分类检测
         function detectMedicineCategory(medicineName) {
