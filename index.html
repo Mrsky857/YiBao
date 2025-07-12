@@ -2729,10 +2729,100 @@
    }
 }
     </style>
+    <style>
+        /* ================= 简单音乐按钮样式 ================= */
+        .music-control {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 10001; /* 确保在第一页之上 */
+        }
+        
+        .music-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: rgb(255, 255, 255);
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .music-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .music-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .music-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        /* 播放状态样式 */
+        .music-btn.playing {
+            background: rgba(102, 126, 234, 0.8);
+            animation: musicPulse 2s ease-in-out infinite;
+        }
+        
+        .music-btn.playing .music-icon::before {
+            content: '🔊';
+        }
+        
+        /* 脉冲动画 */
+        @keyframes musicPulse {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .music-control {
+                top: 20px;
+                right: 20px;
+            }
+            
+            .music-btn {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .music-icon {
+                font-size: 1.2rem;
+            }
+        }
+        </style>
 </head>
 <body>
+    
     <!-- 第一页：封面页 -->
     <div class="page-1" id="page1">
+        <div class="music-control" id="musicControl">
+            <button class="music-btn" id="musicBtn" title="开启背景音乐">
+                <span class="music-icon">🎵</span>
+            </button>
+        </div>
+        
+        <!-- 背景音乐（静音预播） -->
+        <audio id="backgroundMusic" src="background-music.mp3" muted autoplay loop preload="auto" playsinline style="display:none;">
+            <source src="background-music.mp3" type="audio/mpeg">
+            <source src="background-music.ogg" type="audio/ogg">
+        </audio>
         <h1 class="title">医保谈判的七年：救命药真的便宜了吗？</h1>
         <h2 class="subtitle">患者呼声未止，还有哪些药品亟待纳入国谈药？</h2>
         <div class="scroll-hint">
@@ -3746,7 +3836,74 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
   
   
-  
+  <script>
+    // 简单音乐控制脚本
+    (function() {
+        'use strict';
+        
+        const musicBtn = document.getElementById('musicBtn');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        
+        if (!musicBtn || !backgroundMusic) {
+            console.warn('音乐控制组件未找到');
+            return;
+        }
+        
+        let isPlaying = false;
+        
+        // 音乐控制函数
+        function toggleMusic() {
+            if (!isPlaying) {
+                // 开始播放
+                backgroundMusic.muted = false;
+                backgroundMusic.volume = 0.3;
+                
+                const playPromise = backgroundMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        isPlaying = true;
+                        musicBtn.classList.add('playing');
+                        musicBtn.title = '音乐播放中';
+                        console.log('背景音乐开始播放');
+                    }).catch(error => {
+                        console.error('音乐播放失败:', error);
+                    });
+                }
+            } else {
+                // 暂停播放
+                backgroundMusic.pause();
+                isPlaying = false;
+                musicBtn.classList.remove('playing');
+                musicBtn.title = '开启背景音乐';
+                console.log('背景音乐已暂停');
+            }
+        }
+        
+        // 按钮点击事件
+        musicBtn.addEventListener('click', function() {
+            // 点击反馈动画
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 100);
+            
+            toggleMusic();
+        });
+        
+        // 音频事件监听
+        backgroundMusic.addEventListener('error', function(e) {
+            console.error('音频加载错误:', e);
+            musicBtn.style.display = 'none';
+        });
+        
+        // 音频结束时重置状态（虽然是循环播放，但保险起见）
+        backgroundMusic.addEventListener('ended', function() {
+            isPlaying = false;
+            musicBtn.classList.remove('playing');
+        });
+        
+    })();
+    </script>
     <script>
         // ================= 第2.5页独立JavaScript代码 =================
 (function() {
@@ -5661,7 +5818,65 @@ document.querySelectorAll('#chatSentiment .chat-bubble')
     
     })();
     </script>
-    
+    <script>
+        // 背景音乐自动播放脚本
+        (function() {
+            'use strict';
+            
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            
+            if (!backgroundMusic) {
+                console.warn('背景音乐元素未找到');
+                return;
+            }
+            
+            // 设置音量（0.0 到 1.0，建议设置较低避免干扰阅读）
+            backgroundMusic.volume = 0.3;
+            
+            // 尝试自动播放
+            function attemptAutoplay() {
+                const playPromise = backgroundMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('背景音乐开始播放');
+                    }).catch(error => {
+                        console.log('自动播放被阻止，等待用户交互:', error);
+                        // 如果自动播放被阻止，在用户首次交互时播放
+                        document.addEventListener('click', startMusicOnInteraction, { once: true });
+                        document.addEventListener('scroll', startMusicOnInteraction, { once: true });
+                        document.addEventListener('keydown', startMusicOnInteraction, { once: true });
+                    });
+                }
+            }
+            
+            // 用户交互后播放音乐
+            function startMusicOnInteraction() {
+                backgroundMusic.play().then(() => {
+                    console.log('用户交互后背景音乐开始播放');
+                }).catch(error => {
+                    console.error('音乐播放失败:', error);
+                });
+            }
+            
+            // 页面加载完成后尝试播放
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', attemptAutoplay);
+            } else {
+                attemptAutoplay();
+            }
+            
+            // 音频事件监听（用于调试）
+            backgroundMusic.addEventListener('loadstart', () => console.log('开始加载音频'));
+            backgroundMusic.addEventListener('canplaythrough', () => console.log('音频可以播放'));
+            backgroundMusic.addEventListener('play', () => console.log('音频开始播放'));
+            backgroundMusic.addEventListener('pause', () => console.log('音频暂停'));
+            backgroundMusic.addEventListener('error', (e) => {
+                console.error('音频加载错误:', e);
+            });
+            
+        })();
+        </script>
    <!-- === Page-10 专属脚本（隔离版）==================================== -->
 <script>
     ;(function () {
