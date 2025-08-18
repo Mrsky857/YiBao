@@ -15,7 +15,174 @@
             font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
             overflow-x: hidden;
         }
+        /* ========== 固定导航栏样式 - 横向无背景版 ========== */
+/* ========== 固定导航栏样式 - 横向无背景版 ========== */
+.fixed-navbar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 0;
+    transition: all 0.3s ease;
+}
 
+/* 导航项样式 */
+.nav-item {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    overflow: visible; /* 改为visible，确保提示框能显示 */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: rgba(248, 249, 250, 0.9);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+}
+
+.nav-item.active:hover {
+    transform: scale(1.15);
+}
+
+/* 图片样式 */
+.nav-item img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+    filter: brightness(0.8);
+    pointer-events: none; /* 防止图片阻挡鼠标事件 */
+}
+
+.nav-item:hover img {
+    filter: brightness(1);
+    transform: scale(1.1);
+}
+
+.nav-item.active img {
+    filter: brightness(1.2) contrast(1.1);
+}
+
+/* 提示框样式 - 更强的优先级 */
+.nav-item[data-tooltip]::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 70px; /* 增加距离 */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(76, 149, 213, 0.9); /* 增加不透明度 */
+    color: white;
+    padding: 10px 14px; /* 增加内边距 */
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 100; /* 增加层级 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* 添加阴影 */
+}
+
+.nav-item[data-tooltip]::after {
+    content: '';
+    position: absolute;
+    top: 62px; /* 调整小箭头位置 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(76, 149, 213, 0.9);;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* 悬停显示效果 - 增强版 */
+.nav-item[data-tooltip]:hover::before,
+.nav-item[data-tooltip]:hover::after {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .fixed-navbar {
+        top: 15px;
+        left: 15px;
+        gap: 12px;
+    }
+    
+    .nav-item {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .nav-item img {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .nav-item[data-tooltip]::before {
+        top: 60px;
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    
+    .nav-item[data-tooltip]::after {
+        top: 55px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fixed-navbar {
+        top: 10px;
+        left: 10px;
+        gap: 10px;
+    }
+    
+    .nav-item {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .nav-item img {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .nav-item[data-tooltip]::before {
+        top: 55px;
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+    
+    .nav-item[data-tooltip]::after {
+        top: 50px;
+    }
+}
         /* ========== 第一页 - 封面页 ========== */
         .page-1 {
             height: 100vh;
@@ -93,44 +260,114 @@
         }
 
         .quotes-container {
-            position: relative;
-            width: 100%;
-            min-height: 0vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            padding-top: 100px;
-            gap: 40px;
-        }
+    position: relative;
+    width: 100%;
+    min-height: 0vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 100px;
+    gap: 40px;
+}
 
-        .quote-bubble {
-            background: rgba(255,255,255,0.95);
-            padding: 30px 40px;
-            border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            max-width: 700px;
-            width: 90%;
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #000000;
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.8) translateY(30px);
-            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            margin-bottom: 20px;
-        }
+.quote-bubble {
+    background: rgba(255,255,255,0.95);
+    padding: 30px 40px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    max-width: 700px;
+    width: 90%;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    margin-bottom: 20px;
+    
+    /* 新增：容器布局 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .quote-bubble.show {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
+.quote-bubble.show {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
 
-        .quote-bubble.price {
-            color: #000000;
-            font-size: 1.8rem;
-        }
+.quote-bubble.price {
+    color: #000000;
+    font-size: 1.8rem;
+}
+
+/* 新增：说话者头像容器 */
+.speaker-avatar {
+    width: 140px;
+    height: 140px;
+    position: absolute;
+    overflow: hidden;
+    animation: talking 2s ease-in-out infinite;
+}
+
+/* 新增：左边头像位置 */
+.speaker-avatar.left {
+    width: 95px;
+    height: 140px;
+    left: -100px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 新增：右边头像位置 */
+.speaker-avatar.right {
+    right: -150px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 新增：头像图片 - 正方形 */
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px; /* 轻微圆角，保持正方形感觉 */
+}
+
+/* 新增：文字内容 */
+.quote-text {
+    flex: 1;
+    line-height: 1.6;
+    position: relative;
+}
+
+/* 新增：说话动画 */
+@keyframes talking {
+    0%, 100% { 
+        transform: translateY(-50%) scale(1); 
+    }
+    50% { 
+        transform: translateY(-50%) scale(1.05); 
+    }
+}
+
+/* 新增：左边头像动画调整 */
+.speaker-avatar.left {
+    animation: talking-left 2s ease-in-out infinite;
+}
+
+
+
+/* 新增：右边头像动画调整 */
+.speaker-avatar.right {
+    animation: talking-right 2s ease-in-out infinite;
+}
+
+
+
 
         .scene-description {
             margin-top: 100px;
@@ -188,6 +425,25 @@
     flex-direction: column;
     justify-content: center;  /* 垂直居中 */
     align-items: center;      /* 水平居中 */
+}
+
+.page-video {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#backgroundVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 视频完全覆盖页面，保持宽高比 */
+    z-index: 1;
 }
 .page-2-5 {
   min-height: 100vh;
@@ -1410,6 +1666,7 @@
     min-height: 300vh;
     box-sizing: border-box;
 }
+
 /* 标题 */
 .page8-title {
     font-size: 3.2rem; font-weight:700; color:#000;
@@ -1438,10 +1695,17 @@
 .highlight-quote { color:#f39c12; font-weight:700; font-size:1.8rem; }
 .story-paragraph1 {
     font-size:1.8rem; line-height:1.6; color:#333;
-    margin-bottom:120px; text-align:left;
+    margin-bottom:80px; text-align:center;
     opacity:0; transform:translateY(50px);
     transition:all 1s ease; padding:0 20px; box-sizing:border-box;
 }
+.orange-highlight {
+    color: #f39c12;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
 .story-paragraph1.show { opacity:1; transform:translateY(0); }
 /* —— 图片卡片 —— */
 .image-section {
@@ -1467,12 +1731,192 @@
 .price-highlight { color:#e74c3c; font-weight:700; background:linear-gradient(120deg,#fff5f5,#ffe0e0);
     padding:4px 8px; border-radius:6px; display:inline-block; margin:0 5px;
 }
+/* ========== 相册翻页样式 ========== */
+.photo-album-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
 
+.photo-album {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+}
+
+.photo-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.photo-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.photo-slide.prev {
+    transform: translateX(-100%);
+}
+
+.photo-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #f8f9fa;
+}
+
+/* 导航按钮 */
+.album-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.album-nav:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.album-nav.prev {
+    left: 20px;
+}
+
+.album-nav.next {
+    right: 20px;
+}
+
+/* 页码指示器 */
+.album-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: #f39c12;
+    transform: scale(1.2);
+}
+
+.indicator:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+/* 进度条 */
+.album-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+    width: 14.28%; /* 1/7 = 14.28% */
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 图片计数 */
+.album-counter {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 10;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .photo-album {
+        height: 400px;
+    }
+    
+    .album-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .album-nav.prev {
+        left: 10px;
+    }
+    
+    .album-nav.next {
+        right: 10px;
+    }
+    
+    .album-counter {
+        top: 10px;
+        right: 10px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}
+
+/* 加载动画 */
+.photo-slide img {
+    transition: opacity 0.3s ease;
+}
+
+.photo-slide.loading img {
+    opacity: 0.5;
+}
 /* —— 词云图 —— */
 .wordcloud-section { margin:150px 0; text-align:center; opacity:0; transform:translateY(50px);
     transition:all 1s ease;
 }
 .wordcloud-section.show { opacity:1; transform:translateY(0); }
+
+.wordcloud-section_1 { margin:0px 0; text-align:center; opacity:0; transform:translateY(50px);
+    transition:all 1s ease;
+}
+.wordcloud-section_1.show { opacity:1; transform:translateY(0); }
 .wordcloud-title { font-size:2.2rem; font-weight:600; color:#2c3e50; margin-bottom:30px; }
 .wordcloud-image { max-width:100%; height:auto; border-radius:15px; box-shadow:0 15px 40px rgba(0,0,0,0.1); }
 
@@ -1620,7 +2064,7 @@
 }
 /* 整体卡片容器 */
 .network-card{
-    margin:60px auto;
+    margin:30px auto;
     max-width:1200px;
     background:#fff;
     border-radius:16px;
@@ -2730,6 +3174,27 @@
 }
     </style>
     <style>
+        *, *::before, *::after {
+    cursor: url('pill-bottle.png'), auto !important;
+}
+
+/* 确保所有交互元素都使用药瓶光标 */
+a, button, input[type="button"], input[type="submit"], 
+.clickable, .step-node, .poker-card, .medicine-card,
+[onclick], [role="button"] {
+    cursor: url('pill-bottle.png'), pointer !important;
+}
+
+/* 文本输入保持文本光标 */
+input[type="text"], input[type="email"], textarea, 
+[contenteditable] {
+    cursor: text !important;
+}
+
+/* 拖拽元素 */
+[draggable] {
+    cursor: url('pill-bottle.png'), move !important;
+}
         /* ================= 简单音乐按钮样式 ================= */
         .music-control {
             position: fixed;
@@ -2809,7 +3274,21 @@
         </style>
 </head>
 <body>
-    
+    <!-- 固定导航栏 -->
+    <nav class="fixed-navbar" id="fixedNavbar">
+        <div class="nav-item" data-tooltip="解码国谈药" data-target="pageVideo1">
+            <img src="nav-icon1.png" alt="解码国谈药">
+        </div>
+        <div class="nav-item" data-tooltip="七年攻坚路" data-target="pageVideo2">
+            <img src="nav-icon2.png" alt="七年攻坚路">
+        </div>
+        <div class="nav-item" data-tooltip="舆论场" data-target="pageVideo3">
+            <img src="nav-icon3.png" alt="舆论场">
+        </div>
+        <div class="nav-item" data-tooltip="民声清单" data-target="pageVideo4">
+            <img src="nav-icon4.png" alt="民声清单">
+        </div>
+    </nav>
     <!-- 第一页：封面页 -->
     <div class="page-1" id="page1">
         <div class="music-control" id="musicControl">
@@ -2852,7 +3331,17 @@
             <p class="scene-text highlight_1">而是无数家庭的命运轨迹。</p>
         </div>
     </div>
-
+    <div class="page-video" id="pageVideo1">
+        <video 
+            id="backgroundVideo" 
+            autoplay 
+            muted 
+            loop 
+            playsinline
+            preload="auto">
+            <source src="2686_raw.mp4" type="video/mp4">
+        </video>
+    </div>
     <section class="page-2-5" id="page2-5">
         <div class="transition-content">
           <h2 class="transition-title">这些经过多轮“灵魂砍价”后被纳入医保目录的药品</h2>
@@ -3009,6 +3498,18 @@
       </div>
     </div>
   </div>
+
+  <div class="page-video" id="pageVideo2">
+    <video 
+        id="backgroundVideo" 
+        autoplay 
+        muted 
+        loop 
+        playsinline
+        preload="auto">
+        <source src="2687_raw.MP4" type="video/mp4">
+    </video>
+</div>
   <!-- ================= 第六页：文字引入 + 交互式图表 + 统计数据 ================= -->
 <!-- ================= 第六页：数字轨迹 ================= -->
 <div class="page-6" id="page6">
@@ -3212,295 +3713,299 @@
 
     
 </div>
-
+<div class="page-video" id="pageVideo3">
+    <video 
+        id="backgroundVideo" 
+        autoplay 
+        muted 
+        loop 
+        playsinline
+        preload="auto">
+        <source src="2688_raw.MP4" type="video/mp4">
+    </video>
+</div>
 <!-- 第八页：舆情动态分析 -->
 <!-- 第八页：舆情动态分析 -->
+<!-- ========== Page 8 ========== -->
 <div class="page-8" id="page8">
     <h2 class="page8-title" data-scroll="title">舆情温度计：医保谈判背后的情感图谱</h2>
-    <p  class="page8-subtitle" data-scroll="subtitle">让"罕见"被看见，让爱不罕见！</p>
+    <p class="page8-subtitle" data-scroll="subtitle">让"罕见"被看见，让爱不罕见！</p>
   
-    <div class="story-container">
-      <div class="story-paragraph" data-scroll="story1">
-        钱冰桥的货车后座总铺着软垫，<br>6岁的儿子趴在上面，看窗外车流掠过。
-      </div>
-      <div class="story-paragraph" data-scroll="story2">
-        孩子腰椎侧弯如弓，肌肉无力到无法坐直——2017年确诊SMA那天<br>"无药可医"四个字像车辙印，碾在这个父亲的日子里。
-      </div>
-      <div class="story-paragraph" data-scroll="story3">
-        2019年，特效药"诺西那生钠"获批的消息曾让病友群刷屏，<br>但70万元一针的高昂标价让"有药可医"变得不真切。
-      </div>
-      <div class="story-paragraph" data-scroll="story4">
-        按推荐疗程，6针、终身维持——费用足够在老家盖几栋楼。
-      </div>
-  
-      <div class="image-section" data-scroll="image1">
-        <div class="image-card">
-          <img src="诺西那生钠.jpg" alt="诺西那生钠注射液" class="story-image">
-          <h3 class="image-title">这就是那支改变命运的药</h3>
-          <p class="image-description">
-            诺西那生钠注射液，治疗SMA（脊髓性肌萎缩症）的特效药。<br>
-            从<span class="price-highlight">70万元一针</span>到最终的<span class="price-highlight">3.3万元</span>，
-            每一分钱的降价都承载着无数家庭的希望。
-          </p>
-          <p class="image-source">图片来源：视觉中国</p>
+    <!-- ========== 相册容器 ========== -->
+    <div class="photo-album-container">
+      <div class="photo-album" id="photoAlbum">
+        <div class="photo-slide active" data-index="0">
+          <img src="1.png" alt="图片1">
+        </div>
+        <div class="photo-slide" data-index="1">
+          <img src="2.png" alt="图片2">
+        </div>
+        <div class="photo-slide" data-index="2">
+          <img src="3.png" alt="图片3">
+        </div>
+        <div class="photo-slide" data-index="3">
+          <img src="4.png" alt="图片4">
+        </div>
+        <div class="photo-slide" data-index="4">
+          <img src="5.png" alt="图片5">
+        </div>
+        <div class="photo-slide" data-index="5">
+          <img src="6.png" alt="图片6">
+        </div>
+        <div class="photo-slide" data-index="6">
+          <img src="7.png" alt="图片7">
         </div>
       </div>
   
-      <div class="story-paragraph" data-scroll="story5">
-        <span class="highlight-quote">"就像看着救命绳在眼前，却够不着。"</span>
+      <!-- 导航按钮 -->
+      <button class="album-nav prev" id="prevBtn">‹</button>
+      <button class="album-nav next" id="nextBtn">›</button>
+  
+      <!-- 页码指示器 -->
+      <div class="album-indicators">
+        <span class="indicator active" data-index="0"></span>
+        <span class="indicator" data-index="1"></span>
+        <span class="indicator" data-index="2"></span>
+        <span class="indicator" data-index="3"></span>
+        <span class="indicator" data-index="4"></span>
+        <span class="indicator" data-index="5"></span>
+        <span class="indicator" data-index="6"></span>
       </div>
   
-      <div class="story-paragraph" data-scroll="story6">
-        转折点出现在2021年11月的医保谈判间。<br>福建医保局张劲妮握着话筒，对药企代表重复：
-      </div>
-      <div class="story-paragraph" data-scroll="story5">
-        <span class="highlight-quote">"每一个小群体都不应该被放弃。"</span>
-      </div>
-      <div class="image-section" data-scroll="image2">
-        <div class="image-card">
-          <img src="谈判现场.jpg" alt="医保谈判现场" class="story-image">
-          <h3 class="image-title">决定命运的关键时刻</h3>
-          <p class="image-description">
-            2021年医保谈判现场，每一次报价的背后都是生命的重量。<br>
-            在这个会议室里，决策者们用责任和坚持为患者争取希望。
-          </p>
-          <p class="image-source">图片来源：CCTV1新闻</p>
-        </div>
+      <!-- 进度条 -->
+      <div class="album-progress">
+        <div class="progress-bar" id="progressBar"></div>
       </div>
   
-      <div class="story-paragraph" data-scroll="story7">
-        当企业报价从5.368万一路降到3.402万，<br>她依然摇头："我们的底价空间是0。"
+      <!-- 图片计数 -->
+      <div class="album-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">7</span>
       </div>
-      <div class="story-paragraph" data-scroll="story8">
-        <span class="highlight-quote">最终，3.3万的数字落下时，不少人红了眼眶。</span>
-      </div>
-      <div class="story-paragraph" data-scroll="story8">
-        2022年1月1日，诺西那生钠正式纳入医保，<br>同日，全国已有11省市近20名患者完成注射。
-      </div>
-  
-      <div class="story-paragraph" data-scroll="story9">
-        <span class="highlight-quote">"现在一切的辛酸值了。"</span>
-      </div>
-  
-      <div class="wordcloud-section" data-scroll="wordcloud">
-        <h3 class="wordcloud-title">网络声音：医保谈判的民意温度</h3>
-        <img src="词云图.jpg" alt="舆情词云分析图" class="wordcloud-image">
-      </div>
-  
-      <div class="story-paragraph1" data-scroll="wordcloud-desc1">
-        本词云图以"医保谈判 罕见病"为关键词，采集相关微博下的评论内容（共计约3000条）生成，直观反映了公众在该议题中的关注焦点与情感倾向。
-    </div>
-    
-    <div class="story-paragraph1" data-scroll="wordcloud-desc2">
-        从词频分布来看，"关注""支持""让利患者""药价透明""人民健康""惠及百姓"等关键词高频出现，表明网民普遍聚焦于罕见病药品在医保谈判中的药品降价、患者减负与用药保障等方面的实际成效。
-    </div>
-    
-    <div class="story-paragraph1" data-scroll="wordcloud-desc3">
-        "社会共赢""减负""生命至上""携手"等词语的出现，也体现出公众对制度公平性、医保覆盖广度以及公共利益实现的高度关注。
-    </div>
     </div>
   
+    <!-- ========== 图片卡片 ========== -->
+    <div class="image-section" data-scroll="image2">
+      <div class="image-card">
+        <h3 class="image-title">决定命运的关键时刻</h3>
+        <p class="image-description">
+          2021年医保谈判现场，每一次报价的背后都是生命的重量。<br>
+          在这个会议室里，决策者们用责任和坚持为患者争取希望。
+        </p>
+        <p class="image-source">图片来源：CCTV1新闻</p>
+      </div>
+    </div>
+  
+    <!-- ========== 词云图 ========== -->
+    <div class="wordcloud-section" data-scroll="wordcloud">
+      <h3 class="wordcloud-title">网络声音：医保谈判的民意温度</h3>
+      <img src="Pic2.png" alt="舆情词云分析图" class="wordcloud-image">
+    </div>
+  
+    <!-- ========== 图表容器 ========== -->
     <div class="page8-chart" data-scroll="chart">
       <div id="main"></div>
     </div>
-    <!-- ========= 舆情聊天气泡 | 插入点 ========= -->
-<section class="chat-sentiment-section" id="chatSentiment">
-    <!-- 背景浮泡 -->
-    <div class="background-bubbles" id="chatBgBubbles"></div>
   
-    <div class="content-wrapper">
-      <!-- 左列 · 正向 / 支持 -->
-      <div class="bubble-column left-bubbles">
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">👍</div>
-          <div class="bubble-content">
-            每一个小群体都不该被放弃。谈判代表的每次坚持，都是对患者利益的负责！
-            <div class="bubble-meta">来自微博用户</div>
+    <!-- ========= 舆情聊天气泡（注意：仍在 .page-8 内部） ========= -->
+    <section class="chat-sentiment-section" id="chatSentiment" data-scroll>
+      <!-- 背景浮泡 -->
+      <div class="background-bubbles" id="chatBgBubbles"></div>
+  
+      <div class="content-wrapper">
+        <!-- 左列 · 正向 / 支持 -->
+        <div class="bubble-column left-bubbles">
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">👍</div>
+            <div class="bubble-content">
+              每一个小群体都不该被放弃。谈判代表的每次坚持，都是对患者利益的负责！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">❤️</div>
+            <div class="bubble-content">
+              对于病人和病人家属来说都是好消息！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🙏</div>
+            <div class="bubble-content">
+              贴近民意，深得民心。为民众办实事！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">💪</div>
+            <div class="bubble-content">
+              砍价高手，惠民政策很棒！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">✊</div>
+            <div class="bubble-content">
+              坚决打击乱抬药价的行为！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🎯</div>
+            <div class="bubble-content">
+              关键是有效和可得，最好多让靶向药加入。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🌟</div>
+            <div class="bubble-content">
+              中国的医保真的很强大！分担了很多家庭压力，感谢国家惠民利民！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">💖</div>
+            <div class="bubble-content">
+              中国的医疗服务越来越好，实惠又便民！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🎉</div>
+            <div class="bubble-content">
+              救命药大幅降价，太开心了！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🙌</div>
+            <div class="bubble-content">
+              绝对支持！用最低价的救命药，谢谢所有谈判者的善意！
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
           </div>
         </div>
   
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">❤️</div>
-          <div class="bubble-content">
-            对于病人和病人家属来说都是好消息！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
+        <!-- 中列 · 解读文字 -->
+        <div class="analysis-center">
+          <p class="story-paragraph1" data-scroll>
+            数据显示，2018-2024 年间，医保谈判相关舆情呈现<strong>“中性主导、正向增强、负面渐显”</strong>的总体特征。
+          </p>
+          <p class="story-paragraph1" data-scroll>
+            在早期（2018-2019），<em>“中性表达”</em>占比超过七成，舆论以观望与信息获悉为主。
+          </p>
+          <p class="story-paragraph1" data-scroll>
+            自 2020 年起，谈判机制趋于稳定，<em>“积极支持”</em>与<em>“理性认可”</em>明显上升，2020-2021 年尤为突出。
+          </p>
+          <p class="story-paragraph1" data-scroll>
+            2022 年出现关键拐点：谈判期内<em>“理性认可”</em>首次超过中性，占比迅速攀升，公众参与感增强。
+          </p>
+          <p class="story-paragraph1" data-scroll>
+            2023 年，<em>“担忧质疑”</em>情绪维持约 7% 的高位，同时谈判期<em>“中性表达”</em>再度回升，显示更理性谨慎的观望态度。
+          </p>
+          <p class="story-paragraph1" data-scroll>
+            到 2024 年，<em>“担忧质疑”</em>进一步升至 11.9%，表明公众对公平性与覆盖范围的敏感度显著提高。
+          </p>
+          <p class="story-paragraph1" data-scroll>
+            总体来看，随着制度演进，<em>“中性表达”</em>占比下降，而<em>“理性认可”</em>与<em>“担忧质疑”</em>成为后期舆情的两大变量，医保谈判进入更广泛的公众对话时代。
+          </p>
         </div>
   
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🙏</div>
-          <div class="bubble-content">
-            贴近民意，深得民心。为民众办实事！
-            <div class="bubble-meta">来自微博用户</div>
+        <!-- 右列 · 质疑 / 担忧 -->
+        <div class="bubble-column right-bubbles">
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🤔</div>
+            <div class="bubble-content">
+              医保报销的药医院不开，让去外面的药店买，价格还是贵。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">⚠️</div>
+            <div class="bubble-content">
+              不可单纯追求低价而牺牲药效，质量把关要更严。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">💊</div>
+            <div class="bubble-content">
+              升血小板的药能不能也谈一谈？
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">⚖️</div>
+            <div class="bubble-content">
+              降价的同时，请严把质量关。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">😔</div>
+            <div class="bubble-content">
+              如果降价太夸张，企业没动力研发，结果可能适得其反。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">💸</div>
+            <div class="bubble-content">
+              世上只有一种病——穷病。价格再降，对很多家庭还是难。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">🧐</div>
+            <div class="bubble-content">
+              八毛钱十五片的降压药你敢吃吗？效果到底怎样？
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">😡</div>
+            <div class="bubble-content">
+              药价本来就虚高！暴利问题什么时候根治？
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">❓</div>
+            <div class="bubble-content">
+              只看价格不看疗效？老百姓有没有资格用原研药？
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
+          </div>
+  
+          <div class="chat-bubble" data-scroll>
+            <div class="user-avatar">💔</div>
+            <div class="bubble-content">
+              医保里的药疗效一般，真遇到罕见病还是烧钱。
+              <div class="bubble-meta">来自微博用户</div>
+            </div>
           </div>
         </div>
+      </div><!-- /.content-wrapper -->
+    </section>
+  </div><!-- /.page-8 （注意：这是唯一关闭 .page-8 的地方） -->
   
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">💪</div>
-          <div class="bubble-content">
-            砍价高手，惠民政策很棒！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">✊</div>
-          <div class="bubble-content">
-            坚决打击乱抬药价的行为！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🎯</div>
-          <div class="bubble-content">
-            关键是有效和可得，最好多让靶向药加入。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🌟</div>
-          <div class="bubble-content">
-            中国的医保真的很强大！分担了很多家庭压力，感谢国家惠民利民！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">💖</div>
-          <div class="bubble-content">
-            中国的医疗服务越来越好，实惠又便民！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🎉</div>
-          <div class="bubble-content">
-            救命药大幅降价，太开心了！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🙌</div>
-          <div class="bubble-content">
-            绝对支持！用最低价的救命药，谢谢所有谈判者的善意！
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-      </div>
-  
-      <!-- 中列 · 解读文字 -->
-      <div class="analysis-center">
-        <p class="story-paragraph1" data-scroll>
-          数据显示，2018-2024 年间，医保谈判相关舆情呈现<strong>“中性主导、正向增强、负面渐显”</strong>的总体特征。
-        </p>
-        <p class="story-paragraph1" data-scroll>
-          在早期（2018-2019），<em>“中性表达”</em>占比超过七成，舆论以观望与信息获悉为主。
-        </p>
-        <p class="story-paragraph1" data-scroll>
-          自 2020 年起，谈判机制趋于稳定，<em>“积极支持”</em>与<em>“理性认可”</em>明显上升，2020-2021 年尤为突出。
-        </p>
-        <p class="story-paragraph1" data-scroll>
-          2022 年出现关键拐点：谈判期内<em>“理性认可”</em>首次超过中性，占比迅速攀升，公众参与感增强。
-        </p>
-        <p class="story-paragraph1" data-scroll>
-          2023 年，<em>“担忧质疑”</em>情绪维持约 7% 的高位，同时谈判期<em>“中性表达”</em>再度回升，显示更理性谨慎的观望态度。
-        </p>
-        <p class="story-paragraph1" data-scroll>
-          到 2024 年，<em>“担忧质疑”</em>进一步升至 11.9%，表明公众对公平性与覆盖范围的敏感度显著提高。
-        </p>
-        <p class="story-paragraph1" data-scroll>
-          总体来看，随着制度演进，<em>“中性表达”</em>占比下降，而<em>“理性认可”</em>与<em>“担忧质疑”</em>成为后期舆情的两大变量，医保谈判进入更广泛的公众对话时代。
-        </p>
-      </div>
-  
-      <!-- 右列 · 质疑 / 担忧 -->
-      <div class="bubble-column right-bubbles">
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🤔</div>
-          <div class="bubble-content">
-            医保报销的药医院不开，让去外面的药店买，价格还是贵。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">⚠️</div>
-          <div class="bubble-content">
-            不可单纯追求低价而牺牲药效，质量把关要更严。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">💊</div>
-          <div class="bubble-content">
-            升血小板的药能不能也谈一谈？
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">⚖️</div>
-          <div class="bubble-content">
-            降价的同时，请严把质量关。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">😔</div>
-          <div class="bubble-content">
-            如果降价太夸张，企业没动力研发，结果可能适得其反。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">💸</div>
-          <div class="bubble-content">
-            世上只有一种病——穷病。价格再降，对很多家庭还是难。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">🧐</div>
-          <div class="bubble-content">
-            八毛钱十五片的降压药你敢吃吗？效果到底怎样？
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">😡</div>
-          <div class="bubble-content">
-            药价本来就虚高！暴利问题什么时候根治？
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">❓</div>
-          <div class="bubble-content">
-            只看价格不看疗效？老百姓有没有资格用原研药？
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-  
-        <div class="chat-bubble" data-scroll>
-          <div class="user-avatar">💔</div>
-          <div class="bubble-content">
-            医保里的药疗效一般，真遇到罕见病还是烧钱。
-            <div class="bubble-meta">来自微博用户</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
   <!-- ========= /舆情聊天气泡 ========= -->
   
     <div class="network-card">
@@ -3530,15 +4035,23 @@
         </div>
         
       </div>
-      <div class="story-container">
-        <section class="story-paragraph1" data-scroll="keyword-explain">
-          从 2018-2024 年的微博内容词频分析结果来看，公众对“医保谈判”的关注焦点高度集中。整体来看，“医保”与“谈判”结合“国家”或“政策”频共现，构成舆论表达的基本框架之一。<br><br>
-          其中，“药品谈判”“谈判降价”“目录调整”等词频尤为突出，反映出公众对医保目录准入机制、价格谈判降价及药品覆盖范围的长期关注。“价格”“降幅”“成本”等与结果相关的高频词汇，体现了舆论对谈判成效、价格稳定与患者经济负担的持续追踪。<br><br>
-          值得注意的是，“抗癌药”与“昂贵用药”等关键词频频出现，突显公众对重大疾病药物可及性的特别关切；而“企业”“专家”“医保方”等主体的高频同现，也反映出医保谈判作为一项政策行动，在持续推进中已形成政府、企业、媒体与公众多方互动博弈的错综结构，相关议题的可见性与公众参与度不断提高。
-        </section>
+      <div class="wordcloud-section_1" data-scroll="wordcloud">
+        <img src="Pic1.jpg" alt="舆情词云分析图" class="wordcloud-image">
       </div>
       <div class="network-tooltip"></div>
       </div>
+    </div>
+    <div class="page-video" id="pageVideo4">
+        <video 
+            id="backgroundVideo" 
+            autoplay 
+            muted 
+            loop 
+            playsinline
+            preload="auto">
+            <source src="2689_raw.mov" type="video/mp4">
+        </video>
+    </div>
       <div class="page-9" id="page9">
         <!-- 漂浮药品背景 -->
         <div class="floating-medicines">
@@ -3836,6 +4349,120 @@
   
   
   <script>
+   // 导航栏功能
+(function() {
+    'use strict';
+    
+    const navbar = document.getElementById('fixedNavbar');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // 页面映射 - 四个视频页面
+    const pageTargets = {
+        'pageVideo1': document.getElementById('pageVideo1'), // 第一个视频
+        'pageVideo2': document.getElementById('pageVideo2'), // 第二个视频  
+        'pageVideo3': document.getElementById('pageVideo3'), // 第三个视频
+        'pageVideo4': document.getElementById('pageVideo4')  // 第四个视频
+    };
+    
+    // 点击导航项跳转
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            const targetElement = pageTargets[target];
+            
+            if (targetElement) {
+                // 移除所有活动状态
+                navItems.forEach(nav => nav.classList.remove('active'));
+                // 添加当前活动状态
+                this.classList.add('active');
+                
+                // 平滑滚动到目标页面
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // 确保目标视频开始播放
+                setTimeout(() => {
+                    const video = targetElement.querySelector('video');
+                    if (video) {
+                        video.play().catch(e => console.log('视频播放失败:', e));
+                    }
+                }, 500);
+            }
+        });
+    });
+    
+    // 滚动时更新活动状态
+    function updateActiveNav() {
+        const scrollTop = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        
+        let activeTarget = null;
+        
+        // 检查当前在哪个页面
+        Object.entries(pageTargets).forEach(([pageId, element]) => {
+            if (element) {
+                const rect = element.getBoundingClientRect();
+                const elementTop = scrollTop + rect.top;
+                const elementBottom = elementTop + element.offsetHeight;
+                
+                // 如果页面在视窗中占据较大部分，则认为是当前页面
+                if (scrollTop >= elementTop - windowHeight * 0.3 && 
+                    scrollTop < elementBottom - windowHeight * 0.3) {
+                    activeTarget = pageId;
+                }
+            }
+        });
+        
+        // 更新导航状态
+        navItems.forEach(item => {
+            const target = item.getAttribute('data-target');
+            if (target === activeTarget) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+    
+    // 滚动监听（节流处理）
+    let scrollTimer = null;
+    window.addEventListener('scroll', function() {
+        if (scrollTimer) {
+            clearTimeout(scrollTimer);
+        }
+        scrollTimer = setTimeout(updateActiveNav, 100);
+    });
+    
+    // 初始化
+    updateActiveNav();
+    
+    // 键盘快捷键支持
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case '1':
+                    e.preventDefault();
+                    navItems[0].click();
+                    break;
+                case '2':
+                    e.preventDefault();
+                    navItems[1].click();
+                    break;
+                case '3':
+                    e.preventDefault();
+                    navItems[2].click();
+                    break;
+                case '4':
+                    e.preventDefault();
+                    navItems[3].click();
+                    break;
+            }
+        }
+    });
+    
+})();
     // 简单音乐控制脚本
     (function() {
         'use strict';
@@ -4214,30 +4841,48 @@
 
         // 谈判语录数据
         const quotes = [
-            '"3块钱一片，一天两片就是6块钱。患者需要长期服药，是持续的，这笔账必须算清楚。"',
-            '"2块4毛3，能看出你们的诚意。"',
-            '"我们专家组也回个价，2块1毛1。"'
-        ];
+    {
+        text: '"3块钱一片，一天两片就是6块钱。患者需要长期服药，是持续的，这笔账必须算清楚。"',
+        speaker: 'right',
+        avatar: 'expert1.jpg' // 第一个专家头像
+    },
+    {
+        text: '"2块4毛3，能看出你们的诚意。"',
+        speaker: 'left',
+        avatar: 'company1.jpg' // 企业代表头像
+    },
+    {
+        text: '"我们专家组也回个价，2块1毛1。"',
+        speaker: 'right',
+        avatar: 'expert2.jpg' // 第二个专家头像
+    }
+];
 
         let quoteIndex = 0;
         let sceneTextIndex = 0;
         // 创建语录气泡
-        function createQuoteBubble(quote, delay = 0) {
-            setTimeout(() => {
-                const container = document.getElementById('quotesContainer');
-                const bubble = document.createElement('div');
-                bubble.className = 'quote-bubble price';
-                bubble.textContent = quote;
-                
-                container.appendChild(bubble);
-                
-                // 显示动画
-                setTimeout(() => {
-                    bubble.classList.add('show');
-                }, 100);
-                
-            }, delay);
-        }
+        function createQuoteBubble(quoteData, delay = 0) {
+    setTimeout(() => {
+        const container = document.getElementById('quotesContainer');
+        const bubble = document.createElement('div');
+        bubble.className = `quote-bubble price ${quoteData.speaker}`;
+        
+        bubble.innerHTML = `
+            <div class="speaker-avatar ${quoteData.speaker}">
+                <img src="${quoteData.avatar}" alt="说话者头像" class="avatar-img">
+            </div>
+            <div class="quote-text">${quoteData.text}</div>
+        `;
+        
+        container.appendChild(bubble);
+        
+        // 显示动画
+        setTimeout(() => {
+            bubble.classList.add('show');
+        }, 100);
+        
+    }, delay);
+}
 
         // 显示场景描述文字
         function showSceneText() {
@@ -5407,7 +6052,122 @@
         playing = !playing;
       }
     });
-
+    // 相册翻页功能
+(function() {
+    'use strict';
+    
+    const album = document.getElementById('photoAlbum');
+    const slides = document.querySelectorAll('.photo-slide');
+    const indicators = document.querySelectorAll('.indicator');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const currentSlideSpan = document.getElementById('currentSlide');
+    const progressBar = document.getElementById('progressBar');
+    
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+    
+    // 更新显示
+    function updateAlbum() {
+        // 更新幻灯片
+        slides.forEach((slide, index) => {
+            slide.classList.remove('active', 'prev');
+            if (index === currentIndex) {
+                slide.classList.add('active');
+            } else if (index < currentIndex) {
+                slide.classList.add('prev');
+            }
+        });
+        
+        // 更新指示器
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentIndex);
+        });
+        
+        // 更新计数器
+        currentSlideSpan.textContent = currentIndex + 1;
+        
+        // 更新进度条
+        const progressWidth = ((currentIndex + 1) / totalSlides) * 100;
+        progressBar.style.width = progressWidth + '%';
+    }
+    
+    // 下一张
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateAlbum();
+    }
+    
+    // 上一张
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateAlbum();
+    }
+    
+    // 跳转到指定图片
+    function goToSlide(index) {
+        currentIndex = index;
+        updateAlbum();
+    }
+    
+    // 事件监听
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    
+    // 指示器点击
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => goToSlide(index));
+    });
+    
+    // 键盘控制
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+    });
+    
+    // 触摸滑动支持
+    let startX = 0;
+    let endX = 0;
+    
+    album.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+    
+    album.addEventListener('touchend', (e) => {
+        endX = e.changedTouches[0].clientX;
+        const diff = startX - endX;
+        
+        if (Math.abs(diff) > 50) { // 最少滑动50px
+            if (diff > 0) {
+                nextSlide(); // 向左滑动，下一张
+            } else {
+                prevSlide(); // 向右滑动，上一张
+            }
+        }
+    });
+    
+    // 自动播放（可选）
+    let autoPlay = null;
+    
+    function startAutoPlay() {
+        autoPlay = setInterval(nextSlide, 5000); // 5秒自动翻页
+    }
+    
+    function stopAutoPlay() {
+        if (autoPlay) {
+            clearInterval(autoPlay);
+            autoPlay = null;
+        }
+    }
+    
+    // 鼠标悬停时停止自动播放
+    album.addEventListener('mouseenter', stopAutoPlay);
+    album.addEventListener('mouseleave', startAutoPlay);
+    
+    // 启动自动播放（可选，如果不需要可以注释掉）
+    // startAutoPlay();
+    
+})();
     // 响应式调整
     window.addEventListener('resize', () => {
       myChart.resize();
