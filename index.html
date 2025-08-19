@@ -1243,7 +1243,300 @@
         border-radius: 2px;
     }
 }
+.page-5-5 {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ecf0f1 0%, #e9ecef 100%);
+    padding: 100px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
 
+.page-5-5 .content-container {
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* 页面标题 */
+.page5-5-title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 60px;
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+}
+
+/* 内容文字 */
+.page-5-5 .content-text {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 50px 60px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    margin-bottom: 50px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease 0.3s;
+}
+
+.page-5-5 .content-text p {
+    font-size: 1.8rem;
+    line-height: 2;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.page-5-5 .content-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* 揭秘按钮容器 */
+.reveal-button-container {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease 0.6s;
+}
+
+/* 揭秘按钮 */
+.reveal-button {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    border-radius: 50px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reveal-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.reveal-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(243, 156, 18, 0.4);
+    background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+.reveal-button:hover::before {
+    left: 100%;
+}
+
+.reveal-button:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.button-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.reveal-button:hover .button-icon {
+    transform: scale(1.2) rotate(10deg);
+}
+
+/* 弹窗样式 */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-container {
+    background: white;
+    border-radius: 20px;
+    max-width: 95vw;      /* 改为95vw，更宽 */
+    max-height: 95vh;     /* 改为95vh，更高 */
+    width: 1000px;        /* 新增：设置固定宽度 */
+    height: 800px; 
+    overflow: hidden;
+    position: relative;
+    transform: scale(0.8) translateY(50px);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+.popup-overlay.active .popup-container {
+    transform: scale(1) translateY(0);
+}
+
+/* 弹窗头部 */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+}
+
+.popup-header h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* 弹窗内容 */
+.popup-content {
+    padding: 20px;
+    text-align: center;
+    height: calc(100% - 80px); /* 减去头部高度 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.process-image {
+    width: auto;          /* 让宽度根据高度自动调整 */
+    height: 100%;         /* 高度填满可用空间 */
+    max-width: 100%;      /* 防止宽度超出 */
+    max-height: 100%;     /* 确保高度不超出 */
+    object-fit: contain;  /* 保持原始比例 */
+    object-position: center; /* 图片居中显示 */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0px;
+}
+
+.popup-description {
+    margin-top: 20px;
+}
+
+.popup-description p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+}
+
+/* 淡入动画效果类 */
+.page-5-5 .fade-in-element {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+}
+
+.page-5-5 .fade-in-element.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .page5-5-title {
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+    }
+    
+    .page-5-5 .content-text {
+        padding: 30px 25px;
+        margin-bottom: 40px;
+    }
+    
+    .page-5-5 .content-text p {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .reveal-button {
+        padding: 15px 30px;
+        font-size: 1.2rem;
+    }
+    
+    .popup-container {
+        max-width: 95vw;
+        margin: 20px;
+    }
+    
+    .popup-header {
+        padding: 20px 25px;
+    }
+    
+    .popup-header h3 {
+        font-size: 1.5rem;
+    }
+    
+    .popup-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page5-5-title {
+        font-size: 2rem;
+    }
+    
+    .page-5-5 .content-text p {
+        font-size: 1.3rem;
+        text-align: center;
+    }
+    
+    .reveal-button {
+        padding: 12px 25px;
+        font-size: 1.1rem;
+    }
+}
 /* ================= 第六页样式 - 修复后放在正确位置 ================= */
     .page-6 {
         min-height: 100vh;
@@ -3558,6 +3851,44 @@ input[type="text"], input[type="email"], textarea,
     </div>
   </div>
 
+  <!-- 新增页面：医保谈判隐秘规则 -->
+<div class="page-5-5" id="page5-5">
+    <div class="content-container">
+        <!-- 页面标题 -->
+        <h2 class="page5-5-title fade-in-element">医保谈判竟有这些隐秘规则？</h2>
+        
+        <!-- 内容文字 -->
+        <div class="content-text fade-in-element">
+            <p>方寸之间的谈判桌，承载着亿万患者的期盼与医保基金高效使用的重任。每一次报价与还价，都关乎创新药品能否惠及大众、基金支出是否物有所值。</p>
+            <p>为了确保这场至关重要的博弈在公平、透明、高效的轨道上运行，并对谈判过程中的关键环节进行规范，医保谈判有其独特的规则制定。</p>
+        </div>
+        
+        <!-- 揭秘按钮 -->
+        <div class="reveal-button-container fade-in-element">
+            <button class="reveal-button" id="revealBtn">
+                <span class="button-text">点击揭秘</span>
+                <span class="button-icon">🔍</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 弹窗遮罩 -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-container">
+            <div class="popup-header">
+                <h3>医保谈判流程全揭秘</h3>
+                <button class="close-button" id="closeBtn">✕</button>
+            </div>
+            <div class="popup-content">
+                <img src="Pic3.png" alt="医保谈判流程图" class="process-image">
+                <div class="popup-description">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
   <div class="page-video" id="pageVideo2">
     <video 
         id="backgroundVideo" 
@@ -4853,7 +5184,76 @@ input[type="text"], input[type="email"], textarea,
                 ]
             }
         };
+        // 第5.5页弹窗功能
+(function() {
+    'use strict';
+    
+    const revealBtn = document.getElementById('revealBtn');
+    const popupOverlay = document.getElementById('popupOverlay');
+    const closeBtn = document.getElementById('closeBtn');
+    
+    // 打开弹窗
+    function openPopup() {
+        popupOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+    
+    // 关闭弹窗
+    function closePopup() {
+        popupOverlay.classList.remove('active');
+        document.body.style.overflow = 'auto'; // 恢复滚动
+    }
+    
+    // 事件监听
+    if (revealBtn) {
+        revealBtn.addEventListener('click', openPopup);
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closePopup);
+    }
+    
+    // 点击遮罩关闭
+    if (popupOverlay) {
+        popupOverlay.addEventListener('click', function(e) {
+            if (e.target === popupOverlay) {
+                closePopup();
+            }
+        });
+    }
+    
+    // ESC键关闭
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && popupOverlay.classList.contains('active')) {
+            closePopup();
+        }
+    });
+    
+    // 页面滚动动画
+    function checkScrollAnimation() {
+        const page = document.getElementById('page5-5');
+        if (!page) return;
         
+        const rect = page.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        if (rect.top < windowHeight * 0.8) {
+            const elements = page.querySelectorAll('.fade-in-element');
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.classList.add('show');
+                }, index * 200);
+            });
+            
+            // 移除监听器，只执行一次
+            window.removeEventListener('scroll', checkScrollAnimation);
+        }
+    }
+    
+    window.addEventListener('scroll', checkScrollAnimation);
+    checkScrollAnimation(); // 立即检查一次
+    
+})();
         // 显示详细信息的主要函数 - 全局函数
         function showDetails(stageNumber) {
             console.log('点击了按钮:', stageNumber); // 调试用
