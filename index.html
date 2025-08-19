@@ -426,7 +426,66 @@
     justify-content: center;  /* 垂直居中 */
     align-items: center;      /* 水平居中 */
 }
+/* Bilibili视频容器样式 */
+.video-wrapper {
+    position: relative;
+    width: 60%;
+    margin: 25px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    background: #000;
+    transition: all 0.3s ease;
+}
 
+.video-wrapper:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.video-wrapper iframe {
+    width: 100%;
+    height: 400px;
+    border: none;
+    display: block;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .video-wrapper iframe {
+        height: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-wrapper iframe {
+        height: 220px;
+    }
+    
+    .video-wrapper {
+        margin: 20px 0;
+        border-radius: 8px;
+    }
+}
+
+/* 加载提示 */
+.video-wrapper::before {
+    content: '正在加载视频...';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-wrapper.loading::before {
+    opacity: 1;
+}
 .page-video {
     position: relative;
     height: 100vh;
@@ -3785,14 +3844,27 @@ input[type="text"], input[type="email"], textarea,
   
     <!-- ========== 图片卡片 ========== -->
     <div class="image-section" data-scroll="image2">
-      <div class="image-card">
-        <h3 class="image-title">决定命运的关键时刻</h3>
-        <p class="image-description">
-          2021年医保谈判现场，每一次报价的背后都是生命的重量。<br>
-          在这个会议室里，决策者们用责任和坚持为患者争取希望。
-        </p>
-        <p class="image-source">图片来源：CCTV1新闻</p>
-      </div>
+        <div class="image-card">
+            <h3 class="image-title">决定命运的关键时刻</h3>
+            
+            <!-- 插入你的Bilibili视频 -->
+            <div class="video-wrapper">
+                <iframe 
+                    src="//player.bilibili.com/player.html?bvid=BV1cMeAz5E26&page=1&autoplay=0&muted=0&danmaku=0&high_quality=1&as_wide=1&allowfullscreen=true" 
+                    width="100%" 
+                    height="400" 
+                    frameborder="0" 
+                    allowfullscreen="true"
+                    scrolling="no">
+                </iframe>
+            </div>
+            
+            <p class="image-description">
+                2021年医保谈判现场，每一次报价的背后都是生命的重量。<br>
+                在这个会议室里，决策者们用责任和坚持为患者争取希望。
+            </p>
+            <p class="image-source">图片来源：CCTV1新闻</p>
+        </div>
     </div>
   
     <!-- ========== 词云图 ========== -->
@@ -3898,34 +3970,32 @@ input[type="text"], input[type="email"], textarea,
         <!-- 中列 · 解读文字 -->
         <div class="analysis-center">
         <p class="story-paragraph1" data-scroll>
-           数据显示，2018-2024 年间，医保谈判相关舆情呈现
+           2018-2024年间，医保谈判相关舆情呈现
            <strong>
-            <br>“中性主导、正向增强、负面渐显”</strong>的总体特征。<br>
+            <br>“中性主导、正向增强、负面渐显”</strong>的特征。<br>
           </p>
           <p class="story-paragraph1" data-scroll>
-            在早期（2018-2019），舆论以观望与信息获悉为主，
-            <br><em>“ 中性表达 ”</em>占比超过七成。<br>
+            2018-2019年间，舆论主要以观望态度和信息获悉为主，
+            <em>“ 中性表达 ”</em>占比超过七成。<br>
           </p>
           <p class="story-paragraph1" data-scroll>
             2020-2021年间，由于谈判机制趋于稳定，
-                <br> <em>“ 积极支持 ”</em> 与 <em>“ 理性认可 ”</em> 明显上升。
+                <br> <em>“ 积极支持 ”</em> 与 <em>“理性认可”</em> 明显上升。
           </p>
           <p class="story-paragraph1" data-scroll>
-            2022 年出现关键拐点：谈判期内<em>“ 理性认可 ”</em> 首次超过中性，
-            <br> 占比迅速攀升，公众参与感增强。
+            2022年出现关键拐点：谈判期内<em>“ 理性认可 ”</em> 首次超过中性，占比迅速攀升。
           </p>
           <p class="story-paragraph1" data-scroll>
-            2023 年，<em>“ 担忧质疑 ”</em> 情绪维持约 7% 的高位，
-            <br>同时谈判期<em>“ 中性表达 ”</em> 再度回升，呈现更理性谨慎的态度。
+            2023年，<em>“ 担忧质疑 ”</em> 情绪维持约7%的高位，
+            同时谈判期<em>“ 中性表达 ”</em> 再度回升。
           </p>
           <p class="story-paragraph1" data-scroll>
-             2024 年，<em>“ 担忧质疑 ”</em> 进一步升至 11.9%，
-            <br>表明公众对公平性与覆盖范围的敏感度显著提高。
+             2024年，<em>“ 担忧质疑 ”</em> 进一步升至 11.9%，
+            <br>表明公众对公平性与覆盖范围的敏感度提高。
           </p>
           <p class="story-paragraph1" data-scroll>
-            总体来看，随着医保谈判的不断演进，
-            <br><em>“ 中性表达 ”</em>占比下降，而<em>“ 理性认可 ”</em> 与 <em>“ 担忧质疑 ”
-            <br> </em>成为后期舆情两大变量，医保谈判进入更广泛的公众对话时代。
+            总体来看，随着医保谈判的不断演进，<em>“ 中性表达 ”</em>占比下降， 而<em>“ 理性认可 ”</em> 与 <em>“ 担忧质疑 ”
+             </em>成为后期舆情两大变量，进入更广泛的公众对话时代。
           </p>
         </div>
   
