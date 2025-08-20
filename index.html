@@ -429,7 +429,7 @@
 /* Bilibili视频容器样式 */
 .video-wrapper {
     position: relative;
-    width: 60%;
+    width: 80%;
     margin: 25px auto;
     border-radius: 12px;
     overflow: hidden;
@@ -1386,7 +1386,7 @@
     background: white;
     border-radius: 20px;
     max-width: 95vw;      /* 改为95vw，更宽 */
-    max-height: 95vh;     /* 改为95vh，更高 */
+    max-height: 85vh;     /* 改为95vh，更高 */
     width: 1000px;        /* 新增：设置固定宽度 */
     height: 800px; 
     overflow: hidden;
@@ -2065,9 +2065,20 @@
     transition:all 1.2s ease;
 }
 .image-section.show { opacity:1; transform:scale(1) translateY(0); }
-.image-card { background:#fff; border-radius:25px; padding:40px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.1); position:relative;
-    overflow:hidden; transition:all 0.3s ease;
+.image-card{
+  background:#fff;
+  border-radius:25px;
+  padding:40px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.1);
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s ease;
+
+  /* 新增：页面 80% 宽 + 居中 + 盒模型稳固 */
+  width: min(80vw, 1400px);   /* 不想上限就写 80vw 即可 */
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
 .image-card:hover { transform:translateY(-10px); box-shadow:0 30px 80px rgba(0,0,0,0.15); }
 .image-card::before { content:''; position:absolute; top:0; left:0; right:0; height:6px;
@@ -2269,6 +2280,24 @@
     transition:all 1s ease;
 }
 .wordcloud-section_1.show { opacity:1; transform:translateY(0); }
+
+.wordcloud-section_2{
+  width: 100%;
+  margin: 0;                 /* 全宽就不用 auto 了 */
+  text-align: center;        /* 可有可无 */
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease;
+}
+.wordcloud-section_2.show{ opacity:1; transform:translateY(0); }
+
+/* 核心：把 80% 屏宽加到图片上，并用 auto 居中 */
+.wordcloud-section_2 img{
+  width: min(80vw, 1400px);  /* 80% 屏宽；上限可按需修改或去掉 */
+  height: auto;
+  display: block;
+  margin: 0 auto;            /* 水平居中 */
+}
 .wordcloud-title { font-size:3.0rem; font-weight:600; color:#2c3e50; margin-bottom:30px; }
 .wordcloud-image { max-width:95%; height:auto; border-radius:15px; box-shadow:0 15px 40px rgba(0,0,0,0.1); }
 
@@ -3960,6 +3989,10 @@ input[type="text"], input[type="email"], textarea,
       <p class="page6-text">在每一次定价锤定之后，</p>
       <p class="page6-text">都可能藏着一个家庭松了一口气的声音。</p>
     </div>
+    <div class="wordcloud-section_1" data-scroll="wordcloud">
+        <h3 class="wordcloud-title">医保谈判“灵魂砍价”是砍的越多越好吗？</h3>
+        <img src="Pic6.PNG" alt="舆情词云分析图" class="wordcloud-image">
+      </div>
   </div>
   
   
@@ -4194,7 +4227,6 @@ input[type="text"], input[type="email"], textarea,
                 2021年医保谈判现场，每一次报价的背后都是生命的重量。<br>
                 在这个会议室里，决策者们用责任和坚持为患者争取希望。
             </p>
-            <p class="image-source">图片来源：CCTV1新闻</p>
         </div>
     </div>
   
@@ -4326,7 +4358,7 @@ input[type="text"], input[type="email"], textarea,
           </p>
           <p class="story-paragraph1" data-scroll>
             总体来看，随着医保谈判的不断演进，<em>“ 中性表达 ”</em>占比下降， 而<em>“ 理性认可 ”</em> 与 <em>“ 担忧质疑 ”
-             </em>成为后期舆情两大变量，进入更广泛的公众对话时代。
+             </em>成为后期舆情两大变量，推动着医保谈判进入更广泛的公众对话时代。
           </p>
         </div>
   
@@ -4731,18 +4763,9 @@ input[type="text"], input[type="email"], textarea,
  <!-- ========== 第十页：留言板 ========== -->
  <div class="page-11" id="page11">
   <div class="page11-container">
-      <div class="conclusion-content">
-          <div class="conclusion-text-block">
-              <p class="conclusion-paragraph fade-in-element">在公共政策的体系中，医保谈判是一张写满数字的表格，也是一纸托起生命的契约。七年来，谈判桌上的每一次砍价、每一次落签，都在缩短"生的希望"与"付得起"的距离。</p>
-              
-              <p class="conclusion-paragraph fade-in-element">从天价罕见病药与癌症靶向药，到慢性病与儿童用药，医保目录不断延展，其背后，是国家对基本医疗公平的持续推进。</p>
-              
-              <p class="conclusion-paragraph fade-in-element">但制度的进步，不意味着终点的抵达。因为，仍有一些药还在目录之外，仍有一些人还在等待。</p>
-              
-              <p class="conclusion-paragraph fade-in-element">与此同时，我们也关注到，一些声音在悄然浮现：当价格一降再降，疗效是否依旧？质量是否可控？那些写进目录的药，是否真的能用得上、用得好？</p>
-              
-              <p class="conclusion-paragraph fade-in-element">这些被低声提起的担忧，正是医保谈判步入深水区后，亟待回应的新问题。因此我们呼吁更多企业在降价的同时坚守疗效，让"进目录"的药，也真正"用得上"。</p>
-              
+      
+        <div class="wordcloud-section_2" data-scroll="wordcloud">
+            <img src="Pic4.png" alt="解释分析图" class="wordcloud-image">
           </div>
           
           <div class="call-to-action fade-in-element">
@@ -4751,7 +4774,7 @@ input[type="text"], input[type="email"], textarea,
                   <span class="button-arrow">→</span>
               </button>
           </div>
-      </div>
+      
   </div>
 </div>
   
